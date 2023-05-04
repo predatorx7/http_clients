@@ -22,6 +22,8 @@ class ClientWith extends BaseClient {
   /// Defaults to [PathJoinStrategy.originalOnlyIfHasHost].
   final PathJoinCallback onJoinPath;
 
+  /// Creates a [ClientWith] http client that can update the url
+  /// and headers of a [BaseRequest] with [url], and [headers].
   ClientWith(
     this._inner, {
     this.url,
@@ -29,13 +31,13 @@ class ClientWith extends BaseClient {
     this.onJoinPath = PathJoinStrategy.originalOnlyIfHasHost,
   });
 
-
-  /// Returns a copy of [original] with the given [Request.body] where url 
+  /// Returns a copy of [original] with the given [Request.body] where url
   /// and headers are overriden.
   @protected
   StreamedRequest updateRequest(BaseRequest original) {
     final Stream<List<int>> body = original.finalize();
-    final request = StreamedRequest(original.method, joinUrls(url, original.url, onJoinPath))
+    final request = StreamedRequest(
+        original.method, joinUrls(url, original.url, onJoinPath))
       ..contentLength = original.contentLength
       ..followRedirects = original.followRedirects
       ..headers.addAll(original.headers)

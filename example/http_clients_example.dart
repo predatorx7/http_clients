@@ -25,11 +25,16 @@ class TodoModel {
   }
 }
 
-class JsonPlaceholderService {
+final jsonPlaceholderClient = ClientWith(
+  http.Client(),
+  url: Uri.https('jsonplaceholder.typicode.com'),
+);
+
+class TodoService {
   final _client = RestClient(
     ClientWith(
-      http.Client(),
-      url: Uri.https('jsonplaceholder.typicode.com'),
+      jsonPlaceholderClient,
+      url: Uri(path: '/todos'),
     ),
     serializers: JsonModelSerializer({
       TodoModel: TodoModel.fromJson,
@@ -37,13 +42,14 @@ class JsonPlaceholderService {
   );
 
   Future<TodoModel> getTodoById(int id) async {
-    final response = await _client.get(Uri(path: '/todos/$id'));
+    // https://jsonplaceholder.typicode.com/todos/:id
+    final response = await _client.get(Uri(path: '/$id'));
     return (await response.deserializeBodyAsync<TodoModel>())!;
   }
 }
 
 void main() async {
-  final service = JsonPlaceholderService();
+  final service = TodoService();
 
   final ids = List.generate(10, (index) => index + 1);
 
