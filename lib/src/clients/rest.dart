@@ -93,11 +93,11 @@ class RestResponse extends Response {
 
   final JsonModelSerializer serializers;
 
-  Object? getJsonBody() {
+  Object? get jsonBody {
     return _tryDecodeJson(body);
   }
 
-  Future<Object?> getJsonBodyAsync() {
+  Future<Object?> get jsonBodyAsync {
     return Isolate.run(() => _tryDecodeJson(body));
   }
 
@@ -153,31 +153,55 @@ class RestClient extends BaseClient {
       _makeRest(super.get(url, headers: headers));
 
   @override
-  Future<RestResponse> post(Uri url,
-          {Map<String, String>? headers, Object? body, Encoding? encoding}) =>
-      _makeRest(
-          super.post(url, headers: headers, body: body, encoding: encoding));
+  Future<RestResponse> post(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _makeRest(
+      super.post(url, headers: headers, body: body, encoding: encoding),
+    );
+  }
 
   @override
-  Future<RestResponse> put(Uri url,
-          {Map<String, String>? headers, Object? body, Encoding? encoding}) =>
-      _makeRest(
-          super.put(url, headers: headers, body: body, encoding: encoding));
+  Future<RestResponse> put(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _makeRest(
+      super.put(url, headers: headers, body: body, encoding: encoding),
+    );
+  }
 
   @override
-  Future<RestResponse> patch(Uri url,
-          {Map<String, String>? headers, Object? body, Encoding? encoding}) =>
-      _makeRest(
-          super.patch(url, headers: headers, body: body, encoding: encoding));
+  Future<RestResponse> patch(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _makeRest(
+      super.patch(url, headers: headers, body: body, encoding: encoding),
+    );
+  }
 
   @override
-  Future<RestResponse> delete(Uri url,
-          {Map<String, String>? headers, Object? body, Encoding? encoding}) =>
-      _makeRest(
-          super.delete(url, headers: headers, body: body, encoding: encoding));
+  Future<RestResponse> delete(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _makeRest(
+      super.delete(url, headers: headers, body: body, encoding: encoding),
+    );
+  }
 
   Future<RestResponse> _makeRest(Future<Response> response) {
-    throw RestResponse.fromResponse(response, serializers);
+    return RestResponse.fromResponse(response, serializers);
   }
 
   @override
