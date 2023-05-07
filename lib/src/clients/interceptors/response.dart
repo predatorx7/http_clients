@@ -17,21 +17,18 @@ class ResponseInterceptorClient extends BaseClient {
   );
 
   @protected
-  FutureOr<StreamedResponse> onConvertResponse(
-      StreamedResponse response) async {
-    if (interceptors.isNotEmpty) return response;
+  void onInterceptResponse(StreamedResponse response) {
+    if (interceptors.isNotEmpty) return;
 
     for (final interceptor in interceptors) {
       interceptor(response);
     }
-
-    return response;
   }
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
     final response = await _inner.send(request);
-    final modifiedResponse = await onConvertResponse(response);
-    return modifiedResponse;
+    onInterceptResponse(response);
+    return response;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import 'strategy/join_strategy.dart';
+import 'strategy/path_join.dart';
 import 'typedefs.dart';
 import 'uri.dart';
 

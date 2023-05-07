@@ -1,4 +1,4 @@
-import 'strategy/join_strategy.dart';
+import 'strategy/path_join.dart';
 import 'typedefs.dart';
 import 'utils.dart';
 

@@ -1,4 +1,4 @@
-import 'package:http_clients/src/strategy/join_strategy.dart';
+import 'package:http_clients/src/strategy/path_join.dart';
 import 'package:http_clients/src/uri.dart';
 
 import 'package:test/test.dart';

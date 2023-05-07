@@ -17,18 +17,17 @@ class RequestInterceptorClient extends BaseClient {
   );
 
   @protected
-  FutureOr<BaseRequest> onInterceptRequest(BaseRequest request) async {
-    if (interceptors.isNotEmpty) return request;
+  void onInterceptRequest(BaseRequest request) {
+    if (interceptors.isNotEmpty) return;
 
     for (final interceptor in interceptors) {
       interceptor(request);
     }
-
-    return request;
   }
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    return _inner.send(await onInterceptRequest(request));
+    onInterceptRequest(request);
+    return _inner.send(request);
   }
 }
