@@ -46,6 +46,8 @@ class TodoService {
     final response = await _client.get(Uri(path: '/$id'));
     return (await response.deserializeBodyAsync<TodoModel>())!;
   }
+
+  void dispose() => _client.close();
 }
 
 void main() async {
@@ -53,9 +55,14 @@ void main() async {
 
   final ids = List.generate(10, (index) => index + 1);
 
+  final futures = <Future>[];
   for (final id in ids) {
-    service.getTodoById(id).then((data) {
+    futures.add(service.getTodoById(id).then((data) {
       print(data);
-    });
+    }));
   }
+
+  await Future.wait(futures);
+
+  service.dispose();
 }

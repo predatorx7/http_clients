@@ -62,4 +62,7 @@ class ClientWith extends BaseClient {
   Future<StreamedResponse> send(BaseRequest request) {
     return _inner.send(updateRequest(request));
   }
+
+  @override
+  void close() => _inner.close();
 }

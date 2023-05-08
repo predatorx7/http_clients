@@ -31,4 +31,7 @@ class ResponseInterceptorClient extends BaseClient {
     onInterceptResponse(response);
     return response;
   }
+
+  @override
+  void close() => _inner.close();
 }

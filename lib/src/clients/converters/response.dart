@@ -3,26 +3,26 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-typedef ResponseConvertorCallback = FutureOr<StreamedResponse> Function(
+typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
-class ResponseConvertorClient extends BaseClient {
+class ResponseConverterClient extends BaseClient {
   final BaseClient _inner;
-  final Iterable<ResponseConvertorCallback> convertors;
+  final Iterable<ResponseConverterCallback> converters;
 
-  ResponseConvertorClient(
+  ResponseConverterClient(
     this._inner,
-    this.convertors,
+    this.converters,
   );
 
   @protected
   FutureOr<StreamedResponse> onConvertResponse(StreamedResponse request) async {
-    if (convertors.isNotEmpty) return request;
+    if (converters.isNotEmpty) return request;
     StreamedResponse modifiedResponse = request;
 
-    for (final convertor in convertors) {
-      modifiedResponse = await convertor(modifiedResponse);
+    for (final converter in converters) {
+      modifiedResponse = await converter(modifiedResponse);
     }
 
     return modifiedResponse;
@@ -34,4 +34,7 @@ class ResponseConvertorClient extends BaseClient {
     final modifiedResponse = await onConvertResponse(response);
     return modifiedResponse;
   }
+
+  @override
+  void close() => _inner.close();
 }

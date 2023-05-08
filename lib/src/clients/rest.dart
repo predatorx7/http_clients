@@ -208,4 +208,7 @@ class RestClient extends BaseClient {
   Future<StreamedResponse> send(BaseRequest request) {
     return _inner.send(request);
   }
+
+  @override
+  void close() => _inner.close();
 }

@@ -30,4 +30,7 @@ class RequestInterceptorClient extends BaseClient {
     onInterceptRequest(request);
     return _inner.send(request);
   }
+
+  @override
+  void close() => _inner.close();
 }
