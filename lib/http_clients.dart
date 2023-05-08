@@ -1,4 +1,6 @@
 library http_clients;
 
-export 'src/http_clients_base.dart';
-export 'src/clients/rest.dart';
+export 'src/clients/clients.dart';
+export 'src/serializer/serializer.dart';
+export 'src/strategy/path_join.dart';
+export 'src/uri.dart';

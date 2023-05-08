@@ -2,80 +2,9 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:http/http.dart';
-import 'package:http_clients/src/typedefs.dart';
 
-Object? _tryDecodeJson(String source) {
-  if (source.isEmpty) return null;
-  try {
-    return json.decode(source);
-  } catch (_) {
-    return null;
-  }
-}
-
-class JsonModelSerializer {
-  const JsonModelSerializer(
-    Map<Type, FromJsonCallback<Object>> serializers,
-  ) : _serializers = serializers;
-
-  final Map<Type, FromJsonCallback<Object>> _serializers;
-
-  FromJsonCallback<T> get<T>() {
-    return _serializers[T] as FromJsonCallback<T>;
-  }
-
-  bool contains<T>() {
-    return _serializers.containsKey(T);
-  }
-
-  FromJsonCallback<T> add<T>(FromJsonCallback<T> fromJson) {
-    assert(T != dynamic);
-    _serializers[T] = fromJson;
-
-    return fromJson;
-  }
-
-  void addAll(Map<Type, FromJsonCallback<Object>> other) {
-    _serializers.addAll(other);
-  }
-
-  void merge(JsonModelSerializer serializers) {
-    _serializers.addAll(serializers._serializers);
-  }
-
-  FromJsonCallback<T>? remove<T>() {
-    assert(T != dynamic);
-    return _serializers.remove(T) as FromJsonCallback<T>?;
-  }
-
-  FromJsonCallback<T> putIfAbsent<T>(FromJsonCallback<T> Function() ifAbsent) {
-    assert(T != dynamic);
-    return _serializers.putIfAbsent(T, ifAbsent) as FromJsonCallback<T>;
-  }
-
-  T? deserialize<T>(Object? json) {
-    final jsonBody = json is String ? (_tryDecodeJson(json) ?? json) : json;
-    final serializer = get<T>();
-    return serializer(jsonBody);
-  }
-
-  Future<T?> deserializeAsync<T>(String body) {
-    return Isolate.run(() {
-      return deserialize(body);
-    }, debugName: 'deserializeAsync<$T>');
-  }
-
-  static final common = JsonModelSerializer({});
-
-  factory JsonModelSerializer.from(JsonModelSerializer? other) {
-    final serializers = JsonModelSerializer({});
-    serializers.merge(common);
-    if (other != null) {
-      serializers.merge(other);
-    }
-    return serializers;
-  }
-}
+import '../serializer/json.dart';
+import '../utils.dart';
 
 class RestResponse extends Response {
   /// Create a new HTTP response with a byte array body.
@@ -87,45 +16,45 @@ class RestResponse extends Response {
     super.isRedirect,
     super.persistentConnection,
     super.reasonPhrase,
-    JsonModelSerializer? serializers,
-  })  : serializers = JsonModelSerializer.from(serializers),
+    JsonModelSerializer? serializer,
+  })  : serializer = JsonModelSerializer.from(serializer),
         super.bytes();
 
-  final JsonModelSerializer serializers;
+  final JsonModelSerializer serializer;
 
   Object? get jsonBody {
-    return _tryDecodeJson(body);
+    return tryDecodeJson(body);
   }
 
   Future<Object?> get jsonBodyAsync {
-    return Isolate.run(() => _tryDecodeJson(body));
+    return Isolate.run(() => tryDecodeJson(body));
   }
 
   T? deserializeBody<T>() {
-    if (!serializers.contains<T>()) {
+    if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
-    return serializers.deserialize<T>(body);
+    return serializer.deserialize<T>(body);
   }
 
   Future<T?> deserializeBodyAsync<T>() {
-    if (!serializers.contains<T>()) {
+    if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
-    return serializers.deserializeAsync<T>(body);
+    return serializer.deserializeAsync<T>(body);
   }
 
   /// Creates a new HTTP Rest response by waiting for the full body to become
   /// available from a [Response].
   static Future<RestResponse> fromResponse(
     Future<Response> futureResponse,
-    JsonModelSerializer? serializers,
+    JsonModelSerializer? serializer,
   ) async {
     final response = await futureResponse;
     return RestResponse.bytes(
       response.bodyBytes,
       response.statusCode,
-      serializers: serializers,
+      serializer: serializer,
       request: response.request,
       headers: response.headers,
       isRedirect: response.isRedirect,
@@ -136,12 +65,12 @@ class RestResponse extends Response {
 }
 
 class RestClient extends BaseClient {
-  final BaseClient _inner;
-  final JsonModelSerializer? serializers;
+  final Client _inner;
+  final JsonModelSerializer? serializer;
 
   RestClient(
     this._inner, {
-    this.serializers,
+    this.serializer,
   });
 
   @override
@@ -201,7 +130,7 @@ class RestClient extends BaseClient {
   }
 
   Future<RestResponse> _makeRest(Future<Response> response) {
-    return RestResponse.fromResponse(response, serializers);
+    return RestResponse.fromResponse(response, serializer);
   }
 
   @override

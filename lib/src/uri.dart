@@ -1,12 +1,16 @@
 import 'strategy/path_join.dart';
-import 'typedefs.dart';
 import 'utils.dart';
 
+typedef PathJoinCallback = Iterable<String> Function(
+  Uri url,
+  Uri original,
+);
+
 /// Returns a url after joining [left] and [right].
-/// 
+///
 /// [String] only [Uri] component from [right] is preferred because during usage,
 /// this will be the last [Uri] received when making a request.
-/// 
+///
 /// Merging of paths is decided with the [onJoinPath] callback. Check [PathJoinStrategy]
 /// for more details.
 Uri joinUrls(

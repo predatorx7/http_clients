@@ -8,7 +8,7 @@ typedef RequestConverterCallback = FutureOr<BaseRequest> Function(
 );
 
 class RequestConverterClient extends BaseClient {
-  final BaseClient _inner;
+  final Client _inner;
   final Iterable<RequestConverterCallback> converters;
 
   RequestConverterClient(

@@ -1,4 +1,3 @@
-
 import 'package:http_clients/src/utils.dart';
 
 class PathJoinStrategy {
@@ -39,7 +38,7 @@ class PathJoinStrategy {
   }
 
   /// Returns an array of path segments.
-  /// 
+  ///
   /// Path segments of [originalUrl] is returned if [originalUrl] has host else
   /// returns path segments of both [url] and [originalUrl] where [url] is placed first.
   static Iterable<String> originalOnlyIfHasHost(

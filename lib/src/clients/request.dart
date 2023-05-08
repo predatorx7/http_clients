@@ -1,14 +1,13 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import 'strategy/path_join.dart';
-import 'typedefs.dart';
-import 'uri.dart';
+import '../strategy/path_join.dart';
+import '../uri.dart';
 
 /// A client that overrides [url], [headers] of the request.
 ///
 /// Use [onJoinPath] to decide path joining strategy.
-class ClientWith extends BaseClient {
+class RequestClient extends BaseClient {
   /// If not null, this will merge with the url in the request.
   ///
   /// Every part of the url that is not blank will override.
@@ -22,9 +21,9 @@ class ClientWith extends BaseClient {
   /// Defaults to [PathJoinStrategy.originalOnlyIfHasHost].
   final PathJoinCallback onJoinPath;
 
-  /// Creates a [ClientWith] http client that can update the url
+  /// Creates a [RequestClient] http client that can update the url
   /// and headers of a [BaseRequest] with [url], and [headers].
-  ClientWith(
+  RequestClient(
     this._inner, {
     this.url,
     this.headers,

@@ -8,7 +8,7 @@ typedef RequestInterceptorCallback = void Function(
 );
 
 class RequestInterceptorClient extends BaseClient {
-  final BaseClient _inner;
+  final Client _inner;
   final Iterable<RequestInterceptorCallback> interceptors;
 
   RequestInterceptorClient(

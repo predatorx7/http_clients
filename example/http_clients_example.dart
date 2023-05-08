@@ -25,26 +25,33 @@ class TodoModel {
   }
 }
 
-final jsonPlaceholderClient = ClientWith(
+final jsonPlaceholderClient = RequestClient(
   http.Client(),
   url: Uri.https('jsonplaceholder.typicode.com'),
 );
 
 class TodoService {
   final _client = RestClient(
-    ClientWith(
+    RequestClient(
       jsonPlaceholderClient,
       url: Uri(path: '/todos'),
     ),
-    serializers: JsonModelSerializer({
+    serializer: JsonModelSerializer({
       TodoModel: TodoModel.fromJson,
-    }),
+    })
+      ..addListSerializer<TodoModel>(),
   );
 
   Future<TodoModel> getTodoById(int id) async {
     // https://jsonplaceholder.typicode.com/todos/:id
     final response = await _client.get(Uri(path: '/$id'));
     return (await response.deserializeBodyAsync<TodoModel>())!;
+  }
+
+  Future<List<TodoModel>> getTodos() async {
+    // https://jsonplaceholder.typicode.com/todos/:id
+    final response = await _client.get(Uri());
+    return (await response.deserializeBodyAsync<List<TodoModel>>())!;
   }
 
   void dispose() => _client.close();
@@ -61,6 +68,10 @@ void main() async {
       print(data);
     }));
   }
+
+  futures.add(service.getTodos().then((data) {
+    print(data);
+  }));
 
   await Future.wait(futures);
 

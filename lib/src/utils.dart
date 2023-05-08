@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 bool isNullOrBlank(String? value) {
   return value == null ||
@@ -22,4 +23,13 @@ Map<T, V>? mergeMapIfNotEmptyElseNull<T, V>(Iterable<Map<T, V>> lists) {
 
   if (items.isNotEmpty) return items;
   return null;
+}
+
+Object? tryDecodeJson(String source) {
+  if (source.isEmpty) return null;
+  try {
+    return json.decode(source);
+  } catch (_) {
+    return null;
+  }
 }

@@ -8,7 +8,7 @@ typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
 );
 
 class ResponseConverterClient extends BaseClient {
-  final BaseClient _inner;
+  final Client _inner;
   final Iterable<ResponseConverterCallback> converters;
 
   ResponseConverterClient(

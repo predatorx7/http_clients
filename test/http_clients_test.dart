@@ -41,9 +41,7 @@ void main() {
       );
 
       expect(
-        joinUrls(
-                Uri(path: '/hello'),
-                Uri.parse('api.example.com/products/1'),
+        joinUrls(Uri(path: '/hello'), Uri.parse('api.example.com/products/1'),
                 PathJoinStrategy.originalOnlyIfHasHost)
             .toString(),
         Uri.https('api.example.com', '/products/1/hello').toString(),
