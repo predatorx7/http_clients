@@ -82,7 +82,8 @@ class JsonModelSerializer {
     return serializers;
   }
 
-  FromJsonCallback<List<T>> addListSerializer<T>() {
+  FromJsonCallback<List<T>> addJsonListSerializerOf<T>() {
+    assert(T != dynamic);
     return add<List<T>>(getJsonListSerializer<T>(get<T>()));
   }
 }

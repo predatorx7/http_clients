@@ -39,7 +39,7 @@ class TodoService {
     serializer: JsonModelSerializer({
       TodoModel: TodoModel.fromJson,
     })
-      ..addListSerializer<TodoModel>(),
+      ..addJsonListSerializerOf<TodoModel>(),
   );
 
   Future<TodoModel> getTodoById(int id) async {
