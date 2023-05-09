@@ -1,39 +1,16 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# HTTP Clients
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+A composable, Future-based library for making HTTP requests.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This package contains a set of high-level functions and Client classes which has added behavior to make it easy to consume HTTP resources. It's multi-platform, and supports mobile, desktop, and the browser.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
+- A RestClient that de/serializes models on request and response.
+- A RequestClient that lets you modify request url and headers.
+- InterceptorClient, RequestInterceptorClient, and ResponseInterceptorClient where the interceptors are called on request, and response.
+- ConverterClient, RequestConverterClient, and ResponseConverterClient where the converters are called before request, and after response to modify them.
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+- For comparing client performance from this package, I've included benchmarks for these clients, and Client() from the http package with no external dependency in `benchmarks/` directory.

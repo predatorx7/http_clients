@@ -89,7 +89,12 @@ class RestClient extends BaseClient {
     Encoding? encoding,
   }) {
     return _makeRest(
-      super.post(url, headers: headers, body: body, encoding: encoding),
+      super.post(
+        url,
+        headers: headers,
+        body: processForHttpBody(body),
+        encoding: encoding,
+      ),
     );
   }
 
@@ -101,7 +106,12 @@ class RestClient extends BaseClient {
     Encoding? encoding,
   }) {
     return _makeRest(
-      super.put(url, headers: headers, body: body, encoding: encoding),
+      super.put(
+        url,
+        headers: headers,
+        body: processForHttpBody(body),
+        encoding: encoding,
+      ),
     );
   }
 
@@ -113,7 +123,12 @@ class RestClient extends BaseClient {
     Encoding? encoding,
   }) {
     return _makeRest(
-      super.patch(url, headers: headers, body: body, encoding: encoding),
+      super.patch(
+        url,
+        headers: headers,
+        body: processForHttpBody(body),
+        encoding: encoding,
+      ),
     );
   }
 
@@ -125,7 +140,12 @@ class RestClient extends BaseClient {
     Encoding? encoding,
   }) {
     return _makeRest(
-      super.delete(url, headers: headers, body: body, encoding: encoding),
+      super.delete(
+        url,
+        headers: headers,
+        body: processForHttpBody(body),
+        encoding: encoding,
+      ),
     );
   }
 
