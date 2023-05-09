@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:http_clients/src/utils.dart';
 import 'package:test/test.dart';
 
@@ -29,6 +27,10 @@ void main() {
       );
       expect(
         processForHttpBody(<Object, Object>{'hello': true}),
+        isA<String>(),
+      );
+      expect(
+        processForHttpBody(<Object>[2, true, '4', 5, 8]),
         isA<String>(),
       );
       expect(processForHttpBody(_JsonEncodable()), isA<String>());

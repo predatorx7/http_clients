@@ -17,52 +17,52 @@ class JsonModelSerializerError implements Exception {
 
 class JsonModelSerializer {
   const JsonModelSerializer(
-    Map<Type, FromJsonCallback<Object>> serializers,
-  ) : _serializers = serializers;
+    Map<Type, FromJsonCallback<Object>> deserializers,
+  ) : _deserializers = deserializers;
 
-  final Map<Type, FromJsonCallback<Object>> _serializers;
+  final Map<Type, FromJsonCallback<Object>> _deserializers;
 
   FromJsonCallback<T> get<T>() {
-    final serializer = _serializers[T];
-    if (serializer != null) {
-      return serializer as FromJsonCallback<T>;
+    final deserializer = _deserializers[T];
+    if (deserializer != null) {
+      return deserializer as FromJsonCallback<T>;
     }
     throw JsonModelSerializerError('No serializer found for type `$T`');
   }
 
   bool contains<T>() {
-    return _serializers.containsKey(T);
+    return _deserializers.containsKey(T);
   }
 
   FromJsonCallback<T> add<T>(FromJsonCallback<T> fromJson) {
     assert(T != dynamic);
-    _serializers[T] = fromJson;
+    _deserializers[T] = fromJson;
     return fromJson;
   }
 
   void addAll(Map<Type, FromJsonCallback<Object>> other) {
-    _serializers.addAll(other);
+    _deserializers.addAll(other);
   }
 
-  void merge(JsonModelSerializer serializers) {
-    _serializers.addAll(serializers._serializers);
+  void addAllFrom(JsonModelSerializer serializer) {
+    _deserializers.addAll(serializer._deserializers);
   }
 
   FromJsonCallback<T>? remove<T>() {
     assert(T != dynamic);
-    _serializers.remove(Iterable<T>);
-    return _serializers.remove(T) as FromJsonCallback<T>?;
+    _deserializers.remove(Iterable<T>);
+    return _deserializers.remove(T) as FromJsonCallback<T>?;
   }
 
   FromJsonCallback<T> putIfAbsent<T>(FromJsonCallback<T> Function() ifAbsent) {
     assert(T != dynamic);
-    return _serializers.putIfAbsent(T, ifAbsent) as FromJsonCallback<T>;
+    return _deserializers.putIfAbsent(T, ifAbsent) as FromJsonCallback<T>;
   }
 
   T? deserialize<T>(Object? json) {
     final jsonBody = json is String ? (tryDecodeJson(json) ?? json) : json;
-    final serializer = get<T>();
-    return serializer(jsonBody);
+    final deserializer = get<T>();
+    return deserializer(jsonBody);
   }
 
   Future<T?> deserializeAsync<T>(String body) {
@@ -75,9 +75,9 @@ class JsonModelSerializer {
 
   factory JsonModelSerializer.from(JsonModelSerializer? other) {
     final serializers = JsonModelSerializer({});
-    serializers.merge(common);
+    serializers.addAllFrom(common);
     if (other != null) {
-      serializers.merge(other);
+      serializers.addAllFrom(other);
     }
     return serializers;
   }
