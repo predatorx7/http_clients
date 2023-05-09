@@ -5,45 +5,49 @@ import 'package:test/test.dart';
 
 void main() {
   group('joinUrls', () {
-    test('join with PathJoinStrategy.originalFirstIfHasHost', () {
+    test('join with PathJoinStrategy.originalOnlyIfHasHost', () {
       expect(
-        joinUrls(Uri.https('api.example.com'), Uri.parse('/products/1'),
-                PathJoinStrategy.originalOnlyIfHasHost)
-            .toString(),
+        joinUrls(
+          Uri.parse('/products/1'),
+          Uri.https('api.example.com'),
+          PathJoinStrategy.originalOnlyIfHasHost,
+        ).toString(),
         Uri.https('api.example.com', '/products/1').toString(),
       );
 
       expect(
         joinUrls(
-                Uri.https('api.example.com'),
-                Uri.parse('https://api2.example.com/products/1'),
-                PathJoinStrategy.originalOnlyIfHasHost)
-            .toString(),
+          Uri.parse('https://api2.example.com/products/1'),
+          Uri.https('api.example.com'),
+          PathJoinStrategy.originalOnlyIfHasHost,
+        ).toString(),
         Uri.https('api2.example.com', '/products/1').toString(),
       );
 
       expect(
         joinUrls(
-                Uri.https('api.example.com', '/hello'),
-                Uri.parse('https://api2.example.com/products/1'),
-                PathJoinStrategy.originalOnlyIfHasHost)
-            .toString(),
+          Uri.parse('https://api2.example.com/products/1'),
+          Uri.https('api.example.com', '/hello'),
+          PathJoinStrategy.originalOnlyIfHasHost,
+        ).toString(),
         Uri.https('api2.example.com', '/products/1').toString(),
       );
 
       expect(
         joinUrls(
-                Uri.https('api.example.com', '/hello'),
-                Uri.parse('/products/1'),
-                PathJoinStrategy.originalOnlyIfHasHost)
-            .toString(),
+          Uri.parse('/products/1'),
+          Uri.https('api.example.com', '/hello'),
+          PathJoinStrategy.originalOnlyIfHasHost,
+        ).toString(),
         Uri.https('api.example.com', '/hello/products/1').toString(),
       );
 
       expect(
-        joinUrls(Uri(path: '/hello'), Uri.parse('api.example.com/products/1'),
-                PathJoinStrategy.originalOnlyIfHasHost)
-            .toString(),
+        joinUrls(
+          Uri(path: '/hello'),
+          Uri.parse('https://api.example.com/products/1'),
+          PathJoinStrategy.originalOnlyIfHasHost,
+        ).toString(),
         Uri.https('api.example.com', '/products/1/hello').toString(),
       );
     });

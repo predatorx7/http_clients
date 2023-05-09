@@ -36,7 +36,7 @@ class RequestClient extends BaseClient {
   StreamedRequest updateRequest(BaseRequest original) {
     final Stream<List<int>> body = original.finalize();
     final request = StreamedRequest(
-        original.method, joinUrls(url, original.url, onJoinPath))
+        original.method, joinUrls(original.url, url, onJoinPath))
       ..contentLength = original.contentLength
       ..followRedirects = original.followRedirects
       ..headers.addAll(original.headers)

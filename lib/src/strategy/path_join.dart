@@ -40,17 +40,20 @@ class PathJoinStrategy {
   /// Returns an array of path segments.
   ///
   /// Path segments of [originalUrl] is returned if [originalUrl] has host else
-  /// returns path segments of both [url] and [originalUrl] where [url] is placed first.
+  /// returns path segments of both [otherUrl] and [originalUrl] where [otherUrl] is placed first.
   static Iterable<String> originalOnlyIfHasHost(
-    Uri url,
     Uri originalUrl,
+    Uri otherUrl,
   ) {
     final hasHostInOriginal = !isNullOrBlank(originalUrl.host);
-
+    if (hasHostInOriginal) {
+      return [
+        ...originalUrl.pathSegments,
+      ];
+    }
     return [
-      if (hasHostInOriginal) ...originalUrl.pathSegments,
-      if (!hasHostInOriginal) ...url.pathSegments,
-      if (!hasHostInOriginal) ...originalUrl.pathSegments,
+      ...otherUrl.pathSegments,
+      ...originalUrl.pathSegments,
     ];
   }
 }
