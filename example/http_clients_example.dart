@@ -36,10 +36,10 @@ class TodoService {
       jsonPlaceholderClient,
       url: Uri(path: '/todos'),
     ),
-    serializer: JsonModelSerializer({
+    serializer: JsonModelSerializer(deserializers: {
       TodoModel: TodoModel.fromJson,
     })
-      ..addJsonListSerializerOf<TodoModel>(),
+      ..addJsonListDeserializerOf<TodoModel>(),
   );
 
   Future<TodoModel> getTodoById(int id) async {

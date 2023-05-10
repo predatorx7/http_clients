@@ -40,7 +40,8 @@ void main() {
     test('invalid body', () {
       expect(() => processForHttpBody({'true'}), throwsArgumentError);
       expect(() => processForHttpBody(_JsonUnencodable()), throwsArgumentError);
-      expect(() => processForHttpBody([_JsonUnencodable()]), throwsArgumentError);
+      expect(
+          () => processForHttpBody([_JsonUnencodable()]), throwsArgumentError);
     });
   });
 }

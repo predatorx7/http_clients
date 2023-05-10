@@ -1,4 +1,3 @@
-
 import 'package:http_clients/http_clients.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,10 +34,10 @@ class TodoService {
         client ?? http.Client(),
         url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
       ),
-      serializer: JsonModelSerializer({
+      serializer: JsonModelSerializer(deserializers: {
         TodoModel: TodoModel.fromJson,
       })
-        ..addJsonListSerializerOf<TodoModel>(),
+        ..addJsonListDeserializerOf<TodoModel>(),
     );
 
     return TodoService._(inner);

@@ -15,32 +15,34 @@ class JsonModelSerializerError implements Exception {
   }
 }
 
+/// A class that serializes and deserializes JSON objects to and from
+/// Dart classes.
 class JsonModelSerializer {
-  const JsonModelSerializer(
-    Map<Type, FromJsonCallback<Object>> deserializers,
-  ) : _deserializers = deserializers;
+  JsonModelSerializer({
+    Map<Type, FromJsonCallback<Object>> deserializers = const {},
+  }) : _deserializers = {...deserializers};
 
   final Map<Type, FromJsonCallback<Object>> _deserializers;
 
-  FromJsonCallback<T> get<T>() {
+  FromJsonCallback<T> getDeserializer<T>() {
     final deserializer = _deserializers[T];
     if (deserializer != null) {
       return deserializer as FromJsonCallback<T>;
     }
-    throw JsonModelSerializerError('No serializer found for type `$T`');
+    throw JsonModelSerializerError('No deserializer found for type `$T`');
   }
 
   bool contains<T>() {
     return _deserializers.containsKey(T);
   }
 
-  FromJsonCallback<T> add<T>(FromJsonCallback<T> fromJson) {
+  FromJsonCallback<T> addDeserializer<T>(FromJsonCallback<T> fromJson) {
     assert(T != dynamic);
     _deserializers[T] = fromJson;
     return fromJson;
   }
 
-  void addAll(Map<Type, FromJsonCallback<Object>> other) {
+  void addAllDeserializers(Map<Type, FromJsonCallback<Object>> other) {
     _deserializers.addAll(other);
   }
 
@@ -48,20 +50,21 @@ class JsonModelSerializer {
     _deserializers.addAll(serializer._deserializers);
   }
 
-  FromJsonCallback<T>? remove<T>() {
+  FromJsonCallback<T>? removeDeserializer<T>() {
     assert(T != dynamic);
     _deserializers.remove(Iterable<T>);
     return _deserializers.remove(T) as FromJsonCallback<T>?;
   }
 
-  FromJsonCallback<T> putIfAbsent<T>(FromJsonCallback<T> Function() ifAbsent) {
+  FromJsonCallback<T> putDeserializerIfAbsent<T>(
+      FromJsonCallback<T> Function() ifAbsent) {
     assert(T != dynamic);
     return _deserializers.putIfAbsent(T, ifAbsent) as FromJsonCallback<T>;
   }
 
   T? deserialize<T>(Object? json) {
     final jsonBody = json is String ? (tryDecodeJson(json) ?? json) : json;
-    final deserializer = get<T>();
+    final deserializer = getDeserializer<T>();
     return deserializer(jsonBody);
   }
 
@@ -71,10 +74,10 @@ class JsonModelSerializer {
     }, debugName: 'deserializeAsync<$T>');
   }
 
-  static final common = JsonModelSerializer({});
+  static final common = JsonModelSerializer();
 
   factory JsonModelSerializer.from(JsonModelSerializer? other) {
-    final serializers = JsonModelSerializer({});
+    final serializers = JsonModelSerializer();
     serializers.addAllFrom(common);
     if (other != null) {
       serializers.addAllFrom(other);
@@ -82,9 +85,11 @@ class JsonModelSerializer {
     return serializers;
   }
 
-  FromJsonCallback<List<T>> addJsonListSerializerOf<T>() {
+  FromJsonCallback<List<T>> addJsonListDeserializerOf<T>() {
     assert(T != dynamic);
-    return add<List<T>>(getJsonListSerializer<T>(get<T>()));
+    return addDeserializer<List<T>>(
+      getJsonListSerializer<T>(getDeserializer<T>()),
+    );
   }
 }
 
