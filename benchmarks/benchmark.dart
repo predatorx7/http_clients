@@ -1,7 +1,7 @@
 import 'package:benchmark_harness/benchmark_harness.dart';
 
 abstract class AsyncBenchmark extends AsyncBenchmarkBase {
-  AsyncBenchmark(super.name, [this.tries = 20]);
+  AsyncBenchmark(String name, [this.tries = 20]) : super(name);
 
   final int tries;
 
@@ -14,7 +14,7 @@ abstract class AsyncBenchmark extends AsyncBenchmarkBase {
 }
 
 abstract class Benchmark extends BenchmarkBase {
-  Benchmark(super.name, [this.tries = 20]);
+  Benchmark(String name, [this.tries = 20]) : super(name);
 
   final int tries;
 

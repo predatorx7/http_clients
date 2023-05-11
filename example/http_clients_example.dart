@@ -37,7 +37,7 @@ class TodoService {
       url: Uri(path: '/todos'),
     ),
     serializer: JsonModelSerializer(deserializers: {
-      TodoModel: TodoModel.fromJson,
+      TodoModel: (json) => TodoModel.fromJson(json),
     })
       ..addJsonListDeserializerOf<TodoModel>(),
   );

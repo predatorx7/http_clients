@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import '../utils.dart';
 
 typedef FromJsonCallback<T> = T? Function(Object? json);
@@ -52,7 +50,8 @@ class JsonModelSerializer {
 
   FromJsonCallback<T>? removeDeserializer<T>() {
     assert(T != dynamic);
-    _deserializers.remove(Iterable<T>);
+    final type = _getTypeFrom<List<T>>();
+    _deserializers.remove(type);
     return _deserializers.remove(T) as FromJsonCallback<T>?;
   }
 
@@ -69,8 +68,8 @@ class JsonModelSerializer {
   }
 
   Future<T?> deserializeAsync<T>(String body) {
-    return Isolate.run(() {
-      return deserialize(body);
+    return runInIsolate(() {
+      return deserialize<T>(body);
     }, debugName: 'deserializeAsync<$T>');
   }
 
@@ -91,6 +90,10 @@ class JsonModelSerializer {
       getJsonListSerializer<T>(getDeserializer<T>()),
     );
   }
+}
+
+Type _getTypeFrom<T>() {
+  return T;
 }
 
 FromJsonCallback<List<T>> getJsonListSerializer<T>(

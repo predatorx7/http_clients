@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:http/http.dart';
 
@@ -10,16 +9,24 @@ import '../utils.dart';
 class RestResponse extends Response {
   /// Create a new HTTP response with a byte array body.
   RestResponse.bytes(
-    super.bodyBytes,
-    super.statusCode, {
-    super.request,
-    super.headers,
-    super.isRedirect,
-    super.persistentConnection,
-    super.reasonPhrase,
+    List<int> bodyBytes,
+    int statusCode, {
+    BaseRequest? request,
+    Map<String, String> headers = const {},
+    bool isRedirect = false,
+    bool persistentConnection = true,
+    String? reasonPhrase,
     JsonModelSerializer? serializer,
   })  : serializer = JsonModelSerializer.from(serializer),
-        super.bytes();
+        super.bytes(
+          bodyBytes,
+          statusCode,
+          request: request,
+          headers: headers,
+          isRedirect: isRedirect,
+          persistentConnection: persistentConnection,
+          reasonPhrase: reasonPhrase,
+        );
 
   final JsonModelSerializer serializer;
 
@@ -28,7 +35,7 @@ class RestResponse extends Response {
   }
 
   Future<Object?> get jsonBodyAsync {
-    return Isolate.run(() => tryDecodeJson(body));
+    return runInIsolate(() => tryDecodeJson(body));
   }
 
   T? deserializeBody<T>() {

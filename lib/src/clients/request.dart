@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
@@ -30,29 +31,78 @@ class RequestClient extends BaseClient {
     this.onJoinPath = PathJoinStrategy.originalOnlyIfHasHost,
   });
 
-  /// Returns a copy of [original] with the given [Request.body] where url
-  /// and headers are overriden.
+  bool needsRequestUpdate({
+    required Uri originalUrl,
+    required Uri newUrl,
+    required Map<String, String> originalHeaders,
+  }) {
+    final originalUrlString = originalUrl.toString();
+    final newUrlString = newUrl.toString();
+    final urlNeedsUpdate = originalUrlString != newUrlString;
+    if (urlNeedsUpdate) return true;
+    final headersNeedUpdate =
+        !(const MapEquality().equals(headers, originalHeaders));
+
+    return headersNeedUpdate;
+  }
+
+  /// Returns an updated copy of [original] with the given [Request.body]
+  /// where url and headers are overriden. If url and headers is same as
+  /// request or both are null then the original request is returned.
   @protected
-  StreamedRequest updateRequest(BaseRequest original) {
-    final Stream<List<int>> body = original.finalize();
-    final request = StreamedRequest(
-        original.method, joinUrls(original.url, url, onJoinPath))
-      ..contentLength = original.contentLength
-      ..followRedirects = original.followRedirects
-      ..headers.addAll(original.headers)
-      ..maxRedirects = original.maxRedirects
-      ..persistentConnection = original.persistentConnection;
+  BaseRequest updateRequest(BaseRequest original) {
+    if (url == null && (headers == null || headers!.isEmpty)) return original;
+    final newUrl = joinUrls(original.url, url, onJoinPath);
+    final hasEqualUrls = original.url.toString() == newUrl.toString();
+    final hasEqualHeaders =
+        const MapEquality().equals(headers, original.headers);
+    if (hasEqualUrls && hasEqualHeaders) return original;
+
+    final BaseRequest request;
+    // Todo: Check if copying based on Request Type is faster
+    // compared copying as StreamedRequest from finalized BaseRequest.
+    if (original is Request) {
+      request = Request(original.method, newUrl)
+        ..bodyBytes = original.bodyBytes
+        ..encoding = original.encoding
+        ..followRedirects = original.followRedirects
+        ..headers.addAll(original.headers)
+        ..maxRedirects = original.maxRedirects
+        ..persistentConnection = original.persistentConnection;
+    } else if (original is MultipartRequest) {
+      request = MultipartRequest(original.method, newUrl)
+        ..fields.addAll(original.fields)
+        ..files.addAll(original.files)
+        ..followRedirects = original.followRedirects
+        ..headers.addAll(original.headers)
+        ..maxRedirects = original.maxRedirects
+        ..persistentConnection = original.persistentConnection;
+    } else {
+      final Stream<List<int>> body = original.finalize();
+      // This makes a copy of the request data in order to support
+      // resending it. This can cause a lot of memory usage when sending a large
+      // [StreamedRequest].
+      request = StreamedRequest(
+          original.method, joinUrls(original.url, url, onJoinPath))
+        ..contentLength = original.contentLength
+        ..followRedirects = original.followRedirects
+        ..headers.addAll(original.headers)
+        ..maxRedirects = original.maxRedirects
+        ..persistentConnection = original.persistentConnection;
+
+      request as StreamedRequest;
+
+      body.listen(
+        request.sink.add,
+        onError: request.sink.addError,
+        onDone: request.sink.close,
+        cancelOnError: true,
+      );
+    }
 
     if (headers != null) {
       request.headers.addAll(headers!);
     }
-
-    body.listen(
-      request.sink.add,
-      onError: request.sink.addError,
-      onDone: request.sink.close,
-      cancelOnError: true,
-    );
 
     return request;
   }

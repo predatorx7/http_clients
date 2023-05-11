@@ -35,7 +35,7 @@ class TodoService {
         url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
       ),
       serializer: JsonModelSerializer(deserializers: {
-        TodoModel: TodoModel.fromJson,
+        TodoModel: (json) => TodoModel.fromJson(json),
       })
         ..addJsonListDeserializerOf<TodoModel>(),
     );
