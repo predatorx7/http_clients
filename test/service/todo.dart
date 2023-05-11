@@ -26,22 +26,17 @@ class TodoModel {
 }
 
 class TodoService {
-  TodoService._(this._client);
-
-  factory TodoService([http.Client? client]) {
-    final inner = RestClient(
-      RequestClient(
-        client ?? http.Client(),
-        url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
-      ),
-      serializer: JsonModelSerializer(deserializers: {
-        TodoModel: (json) => TodoModel.fromJson(json),
-      })
-        ..addJsonListDeserializerOf<TodoModel>(),
-    );
-
-    return TodoService._(inner);
-  }
+  TodoService([http.Client? client])
+      : _client = RestClient(
+          RequestClient(
+            client ?? http.Client(),
+            url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
+          ),
+          serializer: JsonModelSerializer(deserializers: {
+            TodoModel: (json) => TodoModel.fromJson(json),
+          })
+            ..addJsonListDeserializerOf<TodoModel>(),
+        );
 
   final RestClient _client;
 
