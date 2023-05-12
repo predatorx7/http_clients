@@ -6,8 +6,12 @@ import 'package:http/http.dart';
 import '../serializer/json.dart';
 import '../utils.dart';
 
+/// A HTTP response for REST HTTP apis.
+///
+/// This will use only [serializer], and [JsonModelSerializer.common]
+/// when deserializing a response body.
 class RestResponse extends Response {
-  /// Create a new HTTP response with a byte array body.
+  /// Create a new HTTP rest response with a byte array body.
   RestResponse.bytes(
     List<int> bodyBytes,
     int statusCode, {
@@ -17,7 +21,7 @@ class RestResponse extends Response {
     bool persistentConnection = true,
     String? reasonPhrase,
     JsonModelSerializer? serializer,
-  })  : serializer = JsonModelSerializer.from(serializer),
+  })  : serializer = JsonModelSerializer.common.merge(serializer),
         super.bytes(
           bodyBytes,
           statusCode,
@@ -30,14 +34,26 @@ class RestResponse extends Response {
 
   final JsonModelSerializer serializer;
 
+  /// Returns the Json object by parsing the response body string.
+  /// The response is json decoded synchronously.
+  ///
+  /// For large response body, try [jsonBodyAsync].
   Object? get jsonBody {
     return tryDecodeJson(body);
   }
 
+  /// Returns the Json object by parsing the response body string.
+  /// The response is json decoded asynchronously in an isolate.
+  ///
+  /// For small response body, try [jsonBody].
   Future<Object?> get jsonBodyAsync {
     return runInIsolate(() => tryDecodeJson(body));
   }
 
+  /// Returns [T] by deserializing the response body to it.
+  /// The response is deserialized synchronously.
+  ///
+  /// For large response body, try [deserializeBodyAsync].
   T? deserializeBody<T>() {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
@@ -45,6 +61,10 @@ class RestResponse extends Response {
     return serializer.deserialize<T>(body);
   }
 
+  /// Returns [T] by deserializing the response body to it.
+  /// The response is deserialized asynchronously in an isolate.
+  ///
+  /// For small response body, try [deserializeBody].
   Future<T?> deserializeBodyAsync<T>() {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
@@ -54,11 +74,10 @@ class RestResponse extends Response {
 
   /// Creates a new HTTP Rest response by waiting for the full body to become
   /// available from a [Response].
-  static Future<RestResponse> fromResponse(
-    Future<Response> futureResponse,
+  factory RestResponse.fromResponse(
+    Response response, [
     JsonModelSerializer? serializer,
-  ) async {
-    final response = await futureResponse;
+  ]) {
     return RestResponse.bytes(
       response.bodyBytes,
       response.statusCode,
@@ -72,6 +91,10 @@ class RestResponse extends Response {
   }
 }
 
+/// Creates a client that returns [RestResponse] for a request.
+///
+/// The [RestResponse] will use only [serializer], and [JsonModelSerializer.common]
+/// when deserializing a response body.
 class RestClient extends BaseClient {
   final Client _inner;
   final JsonModelSerializer? serializer;
@@ -157,8 +180,8 @@ class RestClient extends BaseClient {
     );
   }
 
-  Future<RestResponse> _makeRest(Future<Response> response) {
-    return RestResponse.fromResponse(response, serializer);
+  Future<RestResponse> _makeRest(Future<Response> response) async {
+    return RestResponse.fromResponse(await response, serializer);
   }
 
   @override
