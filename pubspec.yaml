@@ -1,5 +1,5 @@
 name: http_clients
-description: Quickly compose http client
+description: A simple library for composing HTTP clients to make HTTP requests.
 version: 0.1.0
 repository: https://github.com/predatorx7/http_clients
 

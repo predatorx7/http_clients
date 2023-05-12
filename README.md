@@ -8,28 +8,24 @@
 </a>
 </p>
 
-A composable, Future-based library for making HTTP requests.
+A simple library for composing HTTP clients to make HTTP requests. It's reliable, fast, easy to use, available on multiple-platforms and gives you a lot of flexibility.
 
-This package makes it easier to create HTTP clients. It does this by providing a set of composable classes that can be used to build clients that extends [Client] from [package:http](https://pub.dev/packages/http).
+- No code generation required, so you can get started quickly.
+- Combine different clients to create the perfect HTTP client for your needs.
+- Extensive test suite and benchmarks to ensure high performance.
 
-Here are some of the benefits of using this package:
+## Available HTTP Clients
 
-- **No code generation:** You don't have to write any code to create a client. This makes it much faster and easier to get started.
-- **Composable:** The classes in this package are composable, which means you can combine them to create complex clients. This gives you a lot of flexibility in how you build your clients.
-- **Easy to use:** The classes in this package are easy to use. They have simple APIs that are easy to understand.
-
-This makes it a great alternative to other client generators like Chopper and Retrofit. If you're looking for a way to make it easier to create HTTP clients in Flutter, then this package is a great option. It's fast, easy to use, available on multiple-platforms and gives you a lot of flexibility.
-
-## Available Http Clients
-
-- A **RestClient** that de/serializes models on request and response.
-- A **RequestClient** that lets you modify request url and headers.
-- **InterceptorClient**, **RequestInterceptorClient**, and **ResponseInterceptorClient** where the interceptors are called on request, and response.
-- **ConverterClient**, **RequestConverterClient**, and **ResponseConverterClient** where the converters are called before request, and after response to modify them.
+- **RestClient**: A client for REST requests that de/serializes models on request and response.
+- **RequestClient**: A client that lets you modify request url and headers.
+- **InterceptorClient**: A client that allows you to add interceptors to requests and responses.
+- **RequestInterceptorClient**, and **ResponseInterceptorClient** to individually intercept requests or responses.
+- **ConverterClient**: A client that allows you to convert requests and responses before they are sent or received.
+- **RequestConverterClient**, or **ResponseConverterClient** to individually modify requests or responses.
 
 ## Install
 
-Add to your app or package
+Add this package to your app or package
 
 ### Install with git
 
@@ -58,9 +54,11 @@ final client = RequestClient(
 final httpResponse = service.get(Uri(path: '/sample'))
 ```
 
+Note: This could take more memory incase of big request body because it creates a copy of request. I'm still trying to figure out a way to reduce this cost.
+
 ### RestClient
 
-- Any request returns a [RestResponse] which has a `deserialize<T>()` & `deserializeAsync<T>()` for getting json string data from the request as a class.
+- Any request returns a [RestResponse]. [RestResponse] has a `deserialize<T>()` & `deserializeAsync<T>()` for getting json string data from the request as a class.
 - Deserializer for any type `T` must be added to the [JsonModelSerializer] in [RestClient]'s contructor or in [JsonModelSerializer.common].
 
 Below is a simple use of this client. 
