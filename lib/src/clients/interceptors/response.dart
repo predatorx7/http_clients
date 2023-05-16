@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../force_closable.dart';
+
 typedef ResponseInterceptorCallback = void Function(
   StreamedResponse,
 );
 
-class ResponseInterceptorClient extends BaseClient {
+class ResponseInterceptorClient extends BaseClient implements ParentClient {
   final Client _inner;
   final Iterable<ResponseInterceptorCallback> interceptors;
 
@@ -18,7 +20,7 @@ class ResponseInterceptorClient extends BaseClient {
 
   @protected
   void onInterceptResponse(StreamedResponse response) {
-    if (interceptors.isNotEmpty) return;
+    if (interceptors.isEmpty) return;
 
     for (final interceptor in interceptors) {
       interceptor(response);
@@ -33,5 +35,5 @@ class ResponseInterceptorClient extends BaseClient {
   }
 
   @override
-  void close() => _inner.close();
+  void close({ bool force = false }) => force ? _inner.close() : null;
 }

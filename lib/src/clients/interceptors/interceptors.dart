@@ -1,13 +1,14 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../force_closable.dart';
 import 'request.dart';
 import 'response.dart';
 
 export 'request.dart';
 export 'response.dart';
 
-class InterceptorClient extends BaseClient {
+class InterceptorClient extends BaseClient implements ParentClient {
   final Client _inner;
   final Iterable<RequestInterceptorCallback>? requestInterceptors;
   final Iterable<ResponseInterceptorCallback>? responseInterceptors;
@@ -21,7 +22,7 @@ class InterceptorClient extends BaseClient {
   @protected
   void onInterceptRequest(BaseRequest request) {
     final interceptors = requestInterceptors;
-    if (interceptors == null || interceptors.isNotEmpty) return;
+    if (interceptors == null || interceptors.isEmpty) return;
 
     for (final interceptor in interceptors) {
       interceptor(request);
@@ -31,7 +32,7 @@ class InterceptorClient extends BaseClient {
   @protected
   void onInterceptResponse(StreamedResponse response) {
     final interceptors = responseInterceptors;
-    if (interceptors == null || interceptors.isNotEmpty) return;
+    if (interceptors == null || interceptors.isEmpty) return;
 
     for (final interceptor in interceptors) {
       interceptor(response);
@@ -47,5 +48,5 @@ class InterceptorClient extends BaseClient {
   }
 
   @override
-  void close() => _inner.close();
+  void close({bool force = false}) => force ? _inner.close() : null;
 }

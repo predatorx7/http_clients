@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../force_closable.dart';
+
 typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
-class ResponseConverterClient extends BaseClient {
+class ResponseConverterClient extends BaseClient
+    implements ParentClient {
   final Client _inner;
   final Iterable<ResponseConverterCallback> converters;
 
@@ -18,7 +21,7 @@ class ResponseConverterClient extends BaseClient {
 
   @protected
   FutureOr<StreamedResponse> onConvertResponse(StreamedResponse request) async {
-    if (converters.isNotEmpty) return request;
+    if (converters.isEmpty) return request;
     StreamedResponse modifiedResponse = request;
 
     for (final converter in converters) {
@@ -36,5 +39,5 @@ class ResponseConverterClient extends BaseClient {
   }
 
   @override
-  void close() => _inner.close();
+  void close({bool force = false}) => force ? _inner.close() : null;
 }

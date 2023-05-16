@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../force_closable.dart';
 import 'request.dart';
 import 'response.dart';
 
 export 'request.dart';
 export 'response.dart';
 
-class ConverterClient extends BaseClient {
+class ConverterClient extends BaseClient implements ParentClient {
   final Client _inner;
   final Iterable<RequestConverterCallback>? requestConverters;
   final Iterable<ResponseConverterCallback>? responseConverters;
@@ -23,7 +24,7 @@ class ConverterClient extends BaseClient {
   @protected
   FutureOr<BaseRequest> onConvertRequest(BaseRequest request) async {
     final converters = requestConverters;
-    if (converters == null || converters.isNotEmpty) return request;
+    if (converters == null || converters.isEmpty) return request;
     BaseRequest modifiedRequest = request;
 
     for (final converter in converters) {
@@ -36,7 +37,7 @@ class ConverterClient extends BaseClient {
   @protected
   FutureOr<StreamedResponse> onConvertResponse(StreamedResponse request) async {
     final converters = responseConverters;
-    if (converters == null || converters.isNotEmpty) return request;
+    if (converters == null || converters.isEmpty) return request;
     StreamedResponse modifiedResponse = request;
 
     for (final converter in converters) {
@@ -54,5 +55,5 @@ class ConverterClient extends BaseClient {
   }
 
   @override
-  void close() => _inner.close();
+  void close({bool force = false}) => force ? _inner.close() : null;
 }

@@ -18,6 +18,15 @@ class TodoModel {
     );
   }
 
+  Map<String, Object?> toJson() {
+    return {
+      'userId': userId,
+      'id': id,
+      'title': title,
+      'completed': completed,
+    };
+  }
+
   @override
   String toString() {
     final String status = completed ? 'completed' : 'pending';
@@ -31,9 +40,13 @@ final jsonPlaceholderClient = RequestClient(
 );
 
 class TodoService {
-  final _client = RestClient(
+  TodoService({this.createClient});
+
+  final http.Client Function(http.Client)? createClient;
+
+  late final _client = RestClient(
     RequestClient(
-      jsonPlaceholderClient,
+      createClient?.call(jsonPlaceholderClient) ?? jsonPlaceholderClient,
       url: Uri(path: '/todos'),
     ),
     serializer: JsonModelSerializer(deserializers: {
@@ -54,10 +67,30 @@ class TodoService {
     return (await response.deserializeBodyAsync<List<TodoModel>>())!;
   }
 
+  Future<RestResponse> postTodo(TodoModel body) async {
+    // https://jsonplaceholder.typicode.com/todos/:id
+    return _client.post(Uri(), body: body);
+  }
+
+  Future<RestResponse> putTodo(TodoModel body) async {
+    // https://jsonplaceholder.typicode.com/todos/:id
+    return _client.put(Uri(path: '/${body.id}'), body: body);
+  }
+
+  Future<RestResponse> patchTodo(TodoModel body) async {
+    // https://jsonplaceholder.typicode.com/todos/:id
+    return _client.patch(Uri(path: '/${body.id}'), body: body);
+  }
+
+  Future<RestResponse> deleteTodo(int id) async {
+    // https://jsonplaceholder.typicode.com/todos/:id
+    return _client.delete(Uri(path: '/$id'));
+  }
+
   void dispose() => _client.close();
 }
 
-void main() async {
+Future<void> example1() async {
   final service = TodoService();
 
   final ids = List.generate(10, (index) => index + 1);
@@ -74,6 +107,32 @@ void main() async {
   }));
 
   await Future.wait(futures);
+}
 
-  service.dispose();
+Future<void> example2() async {
+  final service = TodoService(
+    createClient: (client) => ResponseInterceptorClient(client, [
+      (response) {
+        print({
+          'statusCode': response.statusCode,
+          'method': response.request?.method,
+          'url': response.request?.url,
+        });
+      },
+    ]),
+  );
+
+  final futures = <Future>[
+    service.postTodo(TodoModel(2, 2, 'title', true)),
+    service.putTodo(TodoModel(2, 2, 'title', true)),
+    service.patchTodo(TodoModel(2, 2, 'title', true)),
+    service.deleteTodo(2),
+  ];
+
+  await Future.wait(futures);
+}
+
+void main() async {
+  await example1();
+  await example2();
 }

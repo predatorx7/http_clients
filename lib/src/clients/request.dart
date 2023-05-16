@@ -4,11 +4,12 @@ import 'package:meta/meta.dart';
 
 import '../strategy/path_join.dart';
 import '../uri.dart';
+import 'force_closable.dart';
 
 /// A client that overrides [url], [headers] of the request.
 ///
 /// Use [onJoinPath] to decide path joining strategy.
-class RequestClient extends BaseClient {
+class RequestClient extends ParentClient {
   /// If not null, this will merge with the url in the request.
   ///
   /// Every part of the url that is not blank will override.
@@ -16,7 +17,6 @@ class RequestClient extends BaseClient {
 
   /// If not null, this will override the headers to override in the request.
   final Map<String, String>? headers;
-  final Client _inner;
 
   /// Decides path joining strategy.
   /// Defaults to [PathJoinStrategy.originalOnlyIfHasHost].
@@ -25,11 +25,11 @@ class RequestClient extends BaseClient {
   /// Creates a [RequestClient] http client that can update the url
   /// and headers of a [BaseRequest] with [url], and [headers].
   RequestClient(
-    this._inner, {
+    Client client, {
     this.url,
     this.headers,
     this.onJoinPath = PathJoinStrategy.originalOnlyIfHasHost,
-  });
+  }) : super(client);
 
   bool needsRequestUpdate({
     required Uri originalUrl,
@@ -109,9 +109,7 @@ class RequestClient extends BaseClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) {
-    return _inner.send(updateRequest(request));
+    return getClient(request.url).send(updateRequest(request));
   }
 
-  @override
-  void close() => _inner.close();
 }
