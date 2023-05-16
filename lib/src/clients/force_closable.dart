@@ -8,12 +8,11 @@ abstract class ParentClient extends BaseClient {
   Client? _inner;
 
   @protected
-  Client getClient([Uri? url]) {
+  Client get client {
     final inner = _inner;
     if (inner == null) {
       throw ClientException(
         'HTTP request failed. Client is already closed.',
-        url,
       );
     }
     return inner;

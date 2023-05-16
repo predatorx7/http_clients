@@ -8,16 +8,15 @@ import 'response.dart';
 export 'request.dart';
 export 'response.dart';
 
-class InterceptorClient extends BaseClient implements ParentClient {
-  final Client _inner;
+class InterceptorClient extends ParentClient {
   final Iterable<RequestInterceptorCallback>? requestInterceptors;
   final Iterable<ResponseInterceptorCallback>? responseInterceptors;
 
   InterceptorClient(
-    this._inner, {
+    Client client, {
     this.requestInterceptors,
     this.responseInterceptors,
-  });
+  }) : super(client);
 
   @protected
   void onInterceptRequest(BaseRequest request) {
@@ -42,11 +41,8 @@ class InterceptorClient extends BaseClient implements ParentClient {
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
     onInterceptRequest(request);
-    final response = await _inner.send(request);
+    final response = await client.send(request);
     onInterceptResponse(response);
     return response;
   }
-
-  @override
-  void close({bool force = false}) => force ? _inner.close() : null;
 }

@@ -9,14 +9,13 @@ typedef RequestInterceptorCallback = void Function(
   BaseRequest,
 );
 
-class RequestInterceptorClient extends BaseClient implements ParentClient {
-  final Client _inner;
+class RequestInterceptorClient extends ParentClient {
   final Iterable<RequestInterceptorCallback> interceptors;
 
   RequestInterceptorClient(
-    this._inner,
+    Client client,
     this.interceptors,
-  );
+  ) : super(client);
 
   @protected
   void onInterceptRequest(BaseRequest request) {
@@ -30,9 +29,6 @@ class RequestInterceptorClient extends BaseClient implements ParentClient {
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
     onInterceptRequest(request);
-    return _inner.send(request);
+    return client.send(request);
   }
-
-  @override
-  void close({ bool force = false }) => force ? _inner.close() : null;
 }

@@ -65,7 +65,8 @@ Object? processForHttpBody(Object? body) {
     }
     return json.encode(body);
   } on JsonUnsupportedObjectError {
-    throw ArgumentError('Invalid request body of type "${body.runtimeType}". Body must be a json supported object/');
+    throw ArgumentError(
+        'Invalid request body of type "${body.runtimeType}". Body must be a json supported object/');
   }
 }
 

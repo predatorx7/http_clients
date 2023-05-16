@@ -10,16 +10,15 @@ import 'response.dart';
 export 'request.dart';
 export 'response.dart';
 
-class ConverterClient extends BaseClient implements ParentClient {
-  final Client _inner;
+class ConverterClient extends ParentClient {
   final Iterable<RequestConverterCallback>? requestConverters;
   final Iterable<ResponseConverterCallback>? responseConverters;
 
   ConverterClient(
-    this._inner, {
+    Client client, {
     this.requestConverters,
     this.responseConverters,
-  });
+  }) : super(client);
 
   @protected
   FutureOr<BaseRequest> onConvertRequest(BaseRequest request) async {
@@ -49,11 +48,8 @@ class ConverterClient extends BaseClient implements ParentClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    final response = await _inner.send(await onConvertRequest(request));
+    final response = await client.send(await onConvertRequest(request));
     final modifiedResponse = await onConvertResponse(response);
     return modifiedResponse;
   }
-
-  @override
-  void close({bool force = false}) => force ? _inner.close() : null;
 }

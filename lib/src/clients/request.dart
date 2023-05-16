@@ -109,7 +109,6 @@ class RequestClient extends ParentClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) {
-    return getClient(request.url).send(updateRequest(request));
+    return client.send(updateRequest(request));
   }
-
 }

@@ -9,15 +9,13 @@ typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
-class ResponseConverterClient extends BaseClient
-    implements ParentClient {
-  final Client _inner;
+class ResponseConverterClient extends ParentClient {
   final Iterable<ResponseConverterCallback> converters;
 
   ResponseConverterClient(
-    this._inner,
+    Client client,
     this.converters,
-  );
+  ) : super(client);
 
   @protected
   FutureOr<StreamedResponse> onConvertResponse(StreamedResponse request) async {
@@ -33,11 +31,8 @@ class ResponseConverterClient extends BaseClient
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    final response = await _inner.send(request);
+    final response = await client.send(request);
     final modifiedResponse = await onConvertResponse(response);
     return modifiedResponse;
   }
-
-  @override
-  void close({bool force = false}) => force ? _inner.close() : null;
 }
