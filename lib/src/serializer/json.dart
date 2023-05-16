@@ -44,7 +44,7 @@ class JsonModelSerializer {
     _deserializers.addAll(other);
   }
 
-  void addAllFrom(JsonModelSerializer serializer) {
+  void apply(JsonModelSerializer serializer) {
     _deserializers.addAll(serializer._deserializers);
   }
 
@@ -73,13 +73,16 @@ class JsonModelSerializer {
     }, debugName: 'deserializeAsync<$T>');
   }
 
+  /// A common [JsonModelSerializer].
   static final common = JsonModelSerializer();
 
-  factory JsonModelSerializer.from(JsonModelSerializer? other) {
+  /// Creates and returns a new copy of JsonModelSerializer
+  /// which includes serializers from both `this` and [other].
+  JsonModelSerializer merge([JsonModelSerializer? other]) {
     final serializers = JsonModelSerializer();
-    serializers.addAllFrom(common);
+    serializers.apply(common);
     if (other != null) {
-      serializers.addAllFrom(other);
+      serializers.apply(other);
     }
     return serializers;
   }
