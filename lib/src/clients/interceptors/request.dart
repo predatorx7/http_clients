@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import '../force_closable.dart';
+import '../wrapper.dart';
 
 typedef RequestInterceptorCallback = void Function(
   BaseRequest,
 );
 
-class RequestInterceptorClient extends ParentClient {
+class RequestInterceptorClient extends WrapperClient {
   final Iterable<RequestInterceptorCallback> interceptors;
 
   RequestInterceptorClient(

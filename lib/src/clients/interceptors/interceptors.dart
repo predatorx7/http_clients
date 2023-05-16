@@ -1,14 +1,14 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import '../force_closable.dart';
+import '../wrapper.dart';
 import 'request.dart';
 import 'response.dart';
 
 export 'request.dart';
 export 'response.dart';
 
-class InterceptorClient extends ParentClient {
+class InterceptorClient extends WrapperClient {
   final Iterable<RequestInterceptorCallback>? requestInterceptors;
   final Iterable<ResponseInterceptorCallback>? responseInterceptors;
 

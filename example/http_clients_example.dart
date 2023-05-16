@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:http_clients/http_clients.dart';
 
@@ -40,20 +42,19 @@ final jsonPlaceholderClient = RequestClient(
 );
 
 class TodoService {
-  TodoService({this.createClient});
+  TodoService({required http.Client client})
+      : _client = RestClient(
+          RequestClient(
+            client,
+            url: Uri(path: '/todos'),
+          ),
+          serializer: JsonModelSerializer(deserializers: {
+            TodoModel: (json) => TodoModel.fromJson(json),
+          })
+            ..addJsonListDeserializerOf<TodoModel>(),
+        );
 
-  final http.Client Function(http.Client)? createClient;
-
-  late final _client = RestClient(
-    RequestClient(
-      createClient?.call(jsonPlaceholderClient) ?? jsonPlaceholderClient,
-      url: Uri(path: '/todos'),
-    ),
-    serializer: JsonModelSerializer(deserializers: {
-      TodoModel: (json) => TodoModel.fromJson(json),
-    })
-      ..addJsonListDeserializerOf<TodoModel>(),
-  );
+  final RestClient _client;
 
   Future<TodoModel> getTodoById(int id) async {
     // https://jsonplaceholder.typicode.com/todos/:id
@@ -90,8 +91,8 @@ class TodoService {
   void dispose() => _client.close();
 }
 
-Future<void> example1() async {
-  final service = TodoService();
+Future<void> example1(http.Client client) async {
+  final service = TodoService(client: client);
 
   final ids = List.generate(10, (index) => index + 1);
 
@@ -109,17 +110,20 @@ Future<void> example1() async {
   await Future.wait(futures);
 }
 
-Future<void> example2() async {
+Future<void> example2(http.Client client) async {
   final service = TodoService(
-    createClient: (client) => ResponseInterceptorClient(client, [
-      (response) {
-        print({
-          'statusCode': response.statusCode,
-          'method': response.request?.method,
-          'url': response.request?.url,
-        });
-      },
-    ]),
+    client: ResponseInterceptorClient(
+      client,
+      [
+        (response) {
+          print(json.encode({
+            'statusCode': response.statusCode,
+            'method': response.request?.method,
+            'url': response.request?.url.toString(),
+          }));
+        },
+      ],
+    ),
   );
 
   final futures = <Future>[
@@ -133,6 +137,8 @@ Future<void> example2() async {
 }
 
 void main() async {
-  await example1();
-  await example2();
+  final http.Client client = jsonPlaceholderClient;
+  await example1(client);
+  await example2(client);
+  client.close();
 }

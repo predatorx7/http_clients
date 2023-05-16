@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import '../force_closable.dart';
+import '../wrapper.dart';
 import 'request.dart';
 import 'response.dart';
 
 export 'request.dart';
 export 'response.dart';
 
-class ConverterClient extends ParentClient {
+class ConverterClient extends WrapperClient {
   final Iterable<RequestConverterCallback>? requestConverters;
   final Iterable<ResponseConverterCallback>? responseConverters;
 

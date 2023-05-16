@@ -4,12 +4,12 @@ import 'package:meta/meta.dart';
 
 import '../strategy/path_join.dart';
 import '../uri.dart';
-import 'force_closable.dart';
+import 'wrapper.dart';
 
 /// A client that overrides [url], [headers] of the request.
 ///
 /// Use [onJoinPath] to decide path joining strategy.
-class RequestClient extends ParentClient {
+class RequestClient extends WrapperClient {
   /// If not null, this will merge with the url in the request.
   ///
   /// Every part of the url that is not blank will override.
@@ -30,21 +30,6 @@ class RequestClient extends ParentClient {
     this.headers,
     this.onJoinPath = PathJoinStrategy.originalOnlyIfHasHost,
   }) : super(client);
-
-  bool needsRequestUpdate({
-    required Uri originalUrl,
-    required Uri newUrl,
-    required Map<String, String> originalHeaders,
-  }) {
-    final originalUrlString = originalUrl.toString();
-    final newUrlString = newUrl.toString();
-    final urlNeedsUpdate = originalUrlString != newUrlString;
-    if (urlNeedsUpdate) return true;
-    final headersNeedUpdate =
-        !(const MapEquality().equals(headers, originalHeaders));
-
-    return headersNeedUpdate;
-  }
 
   /// Returns an updated copy of [original] with the given [Request.body]
   /// where url and headers are overriden. If url and headers is same as

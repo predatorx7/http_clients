@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-import '../force_closable.dart';
+import '../wrapper.dart';
 
 typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
-class ResponseConverterClient extends ParentClient {
+class ResponseConverterClient extends WrapperClient {
   final Iterable<ResponseConverterCallback> converters;
 
   ResponseConverterClient(
