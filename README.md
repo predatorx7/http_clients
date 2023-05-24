@@ -1,18 +1,19 @@
-# HTTP Clients
+# Handle HTTP Clients & Services
 
 <p align="center">
-<a href="https://pub.dev/packages/http_clients"><img src="https://img.shields.io/pub/v/http_clients.svg" alt="Pub"></a>
-<a href="https://github.com/predatorx7/http_clients/actions/workflows/http_clients.yaml"><img src="https://github.com/predatorx7/http_clients/actions/workflows/http_clients.yaml/badge.svg" alt="http_clients"></a>
-<a href="https://codecov.io/gh/predatorx7/http_clients" >
-<img src="https://codecov.io/gh/predatorx7/http_clients/branch/main/graph/badge.svg?token=FIQIP0GYHK"/>
+<a href="https://pub.dev/packages/handle"><img src="https://img.shields.io/pub/v/handle.svg" alt="Pub"></a>
+<a href="https://github.com/predatorx7/handle/actions/workflows/handle.yaml"><img src="https://github.com/predatorx7/handle/actions/workflows/handle.yaml/badge.svg" alt="handle"></a>
+<a href="https://codecov.io/gh/predatorx7/handle" >
+<img src="https://codecov.io/gh/predatorx7/handle/branch/main/graph/badge.svg?token=FIQIP0GYHK"/>
 </a>
 </p>
 
-A simple library for composing HTTP clients to make HTTP requests. It's reliable, fast, easy to use, available on multiple-platforms and gives you a lot of flexibility.
+A simple library for composing HTTP clients, creating services to make HTTP requests. It's reliable, fast, easy to use, available on multiple-platforms and gives you a lot of flexibility.
 
 - No code generation required, so you can get started quickly.
 - Combine different clients to create the perfect HTTP client for your needs.
 - Extensive test suite and benchmarks to ensure high performance.
+- Every client extends dart's pub.dev/packages/http and this they're compatible with [Client] from package:http.
 
 ## Available HTTP Clients
 
@@ -23,17 +24,26 @@ A simple library for composing HTTP clients to make HTTP requests. It's reliable
 - **ConverterClient**: A client that allows you to convert requests and responses before they are sent or received.
 - **RequestConverterClient**, or **ResponseConverterClient** to individually modify requests or responses.
 
+## Available Service classes
+
+- **HttpService** helps you reduce boilerplate when using http client to make http services. 
+- **RestService** helps you reduce boilerplate for writing service classes for rest http clients.
+
 ## Install
 
 Add this package to your app or package
+
+### Install with pub.dev
+
+Run `dart pub add handle`
 
 ### Install with git
 
 Add to your dependencies in `pubspec.yaml`
 ```yaml
-  http_clients:
+  handle:
     git: 
-      url: https://github.com/predatorx7/http_clients.git
+      url: https://github.com/predatorx7/handle.git
 ```
 
 ## Use
@@ -51,10 +61,10 @@ final client = RequestClient(
   },
 );
 
-final httpResponse = service.get(Uri(path: '/sample'))
+final httpResponse = service.get(Uri(path: '/sample')).jsonBody;
 ```
 
-Note: This could take more memory incase of big request body because it creates a copy of request. I'm still trying to figure out a way to reduce this cost.
+Note: This could take more memory incase of big request body because it may create a copy of request. I'm still trying to figure out a way to measure and reduce this cost.
 
 ### RestClient
 
@@ -70,52 +80,38 @@ final service = RestClient(
     url: Uri.https('api.example.com'),
   ),
   serializer: JsonModelSerializer(deserializers: {
-    TodoModel: (json) => TodoModel.fromJson(json),
-  })
-  // Calling the below ethod will add a List<TodoModel> deserializer
-  // if TodoModel already has a deserializer
-  ..addJsonListDeserializerOf<TodoModel>(),
+    JsonModelSerializer<TodoModel>((json) => TodoModel.fromJson(json)),
+  }),
 );
 
 // Make an API call
 final response = await service.get(Uri(path: '/todos'));
 
 // Deserialize body as json to a model class.
-final List<TodoModel>? data = await response.deserializeBodyAsync<List<TodoModel>>();
+final List<TodoModel>? data = await response.data<List<TodoModel>>();
 ```
 
 ## Additional information
 
-- One good way to use this package is to create service using RestClient, RequestClient, etc
+- One good way to use this package is to create service using RestService.
 
 ```dart
+class TodoService extends RestService {
+  TodoService(http.Client client)
+      : super(client, builder: (client) {
+          return RequestClient(
+            client,
+            url: Uri(path: '/todos'),
+          );
+        });
 
-class TodoService {
-  TodoService([http.Client? client])
-      : _client = RestClient(
-          RequestClient(
-            client ?? http.Client(),
-            url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
-          ),
-          serializer: JsonModelSerializer(deserializers: {
-            TodoModel: (json) => TodoModel.fromJson(json),
-          })
-            ..addJsonListDeserializerOf<TodoModel>(),
-        );
-
-  final RestClient _client;
-
-  Future<TodoModel> getTodoById(int id) async {
-    final response = await _client.get(Uri(path: '/$id'));
-    return (await response.deserializeBodyAsync<TodoModel>())!;
+  Future<TodoModel?> getTodo(int id) {
+    return client.get(Uri(path: '$id')).dataAsync();
   }
 
-  Future<List<TodoModel>> getTodos() async {
-    final response = await _client.get(Uri());
-    return (await response.deserializeBodyAsync<List<TodoModel>>())!;
+  Future<List<TodoModel>?> getTodos() {
+    return client.get(Uri()).dataAsync();
   }
-
-  void dispose() => _client.close();
 }
 ```
 

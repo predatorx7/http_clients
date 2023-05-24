@@ -1,3 +1,4 @@
+import 'package:quiver/core.dart' as quiver;
 import '../utils/utils.dart';
 
 typedef FromJsonCallback<T> = T? Function(Object? json);
@@ -40,6 +41,15 @@ class JsonDeserializerOf<T extends Object> {
         deserializer.objectType: deserializer,
     };
   }
+
+  @override
+  bool operator ==(Object? other) {
+    return other is JsonDeserializerOf<T> &&
+        other.deserializeFromJson == deserializeFromJson;
+  }
+
+  @override
+  int get hashCode => quiver.hash2(T, deserializeFromJson);
 }
 
 /// A class that serializes and deserializes JSON objects to and from

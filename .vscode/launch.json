@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "http_clients",
+            "name": "handle",
             "request": "launch",
             "type": "dart",
             "program": "test/utils.dart"

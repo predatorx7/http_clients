@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:http_clients/http_clients.dart';
+import 'package:handle/handle.dart';
 
 final http.Client jsonPlaceholderClient = RequestClient(
   http.Client(),

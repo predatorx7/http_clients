@@ -1,12 +1,12 @@
-name: http_clients
+name: handle
 
 on:
   push:
     paths:
-      - ".github/workflows/http_clients.yaml"
+      - ".github/workflows/handle.yaml"
   pull_request:
     paths:
-      - ".github/workflows/http_clients.yaml"
+      - ".github/workflows/handle.yaml"
   schedule:
     # runs the CI every first day of every month at 00:00 AM
     - cron: "0 0 1 * *"

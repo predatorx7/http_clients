@@ -1,4 +1,4 @@
-import 'package:http_clients/src/utils/utils.dart';
+import 'package:handle/src/utils/utils.dart';
 import 'package:test/test.dart';
 
 class _JsonEncodable {

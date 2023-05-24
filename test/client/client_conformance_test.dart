@@ -1,5 +1,5 @@
 import 'package:http_client_conformance_tests/http_client_conformance_tests.dart';
-import 'package:http_clients/src/clients/clients.dart';
+import 'package:handle/src/clients/clients.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 

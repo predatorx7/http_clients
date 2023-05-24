@@ -1,4 +1,4 @@
-library http_clients;
+library handle;
 
 export 'src/clients/clients.dart';
 export 'src/extensions/extensions.dart';

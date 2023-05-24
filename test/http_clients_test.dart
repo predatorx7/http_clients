@@ -1,5 +1,5 @@
-import 'package:http_clients/src/strategy/path_join.dart';
-import 'package:http_clients/src/uri.dart';
+import 'package:handle/src/strategy/path_join.dart';
+import 'package:handle/src/uri.dart';
 
 import 'package:test/test.dart';
 

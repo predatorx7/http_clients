@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:http_clients/http_clients.dart';
+import 'package:handle/handle.dart';
 import 'package:mockito/mockito.dart';
 
 import '../../test/rest.mocks.dart';

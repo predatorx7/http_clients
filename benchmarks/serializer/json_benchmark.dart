@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
-import 'package:http_clients/http_clients.dart';
+import 'package:handle/handle.dart';
 
 class TodoModel {
   final int userId;
