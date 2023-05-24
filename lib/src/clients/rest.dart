@@ -4,7 +4,29 @@ import 'dart:convert';
 import 'package:http/http.dart';
 
 import '../serializer/json.dart';
-import '../utils.dart';
+import '../utils/utils.dart';
+import 'wrapper.dart';
+
+class RestResponseException extends ClientException {
+  final Object? innerException;
+  final StackTrace? innerStackTrace;
+
+  RestResponseException(
+    String message, {
+    Uri? uri,
+    this.innerException,
+    this.innerStackTrace,
+  }) : super(
+          message,
+          uri,
+        );
+
+  @override
+  String toString() {
+    return 'RestResponseException: $message. $uri $innerException $innerStackTrace'
+        .trim();
+  }
+}
 
 /// A HTTP response for REST HTTP apis.
 ///
@@ -58,18 +80,37 @@ class RestResponse extends Response {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
-    return serializer.deserialize<T>(body);
+    try {
+      return serializer.deserialize<T>(body);
+    } on Exception catch (e, s) {
+      throw RestResponseException(
+        'Failed to deserialize body',
+        uri: request?.url,
+        innerException: e,
+        innerStackTrace: s,
+      );
+    }
   }
 
   /// Returns [T] by deserializing the response body to it.
   /// The response is deserialized asynchronously in an isolate.
   ///
   /// For small response body, try [deserializeBody].
-  Future<T?> deserializeBodyAsync<T>() {
+  Future<T?> deserializeBodyAsync<T>() async {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
-    return serializer.deserializeAsync<T>(body);
+    try {
+      return await serializer.deserializeAsync<T>(body);
+    } catch (e, s) {
+      // Todo: Replace with `Error.throwWithStackTrace(error, stackTrace);` in SDK 2.16.0.
+      throw RestResponseException(
+        'Failed to deserialize body asynchronously',
+        uri: request?.url,
+        innerException: e,
+        innerStackTrace: s,
+      );
+    }
   }
 
   /// Creates a new HTTP Rest response by waiting for the full body to become
@@ -94,15 +135,15 @@ class RestResponse extends Response {
 /// Creates a client that returns [RestResponse] for a request.
 ///
 /// The [RestResponse] will use only [serializer], and [JsonModelSerializer.common]
-/// when deserializing a response body.
-class RestClient extends BaseClient {
-  final Client _inner;
-  final JsonModelSerializer? serializer;
+/// when deserializing a response body and it does not inherit from serializers
+/// in the WrapperClient tree.
+class RestClient extends WrapperClient {
+  JsonModelSerializer? serializer;
 
   RestClient(
-    this._inner, {
+    Client inner, {
     this.serializer,
-  });
+  }) : super(inner);
 
   @override
   Future<RestResponse> head(Uri url, {Map<String, String>? headers}) =>
@@ -186,9 +227,6 @@ class RestClient extends BaseClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) {
-    return _inner.send(request);
+    return inner.send(request);
   }
-
-  @override
-  void close() => _inner.close();
 }

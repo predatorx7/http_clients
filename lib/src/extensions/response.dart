@@ -30,4 +30,24 @@ extension ResponseFuture on Future<http.Response> {
       return _toRest(response).deserializeBodyAsync<T>();
     });
   }
+
+  /// Returns the Json object by parsing the response body string.
+  /// The response is json decoded synchronously.
+  ///
+  /// For large response body, try [jsonBodyAsync].
+  Future<Object?> get jsonBody {
+    return then((response) {
+      return _toRest(response).jsonBody;
+    });
+  }
+
+  /// Returns the Json object by parsing the response body string.
+  /// The response is json decoded asynchronously in an isolate.
+  ///
+  /// For small response body, try [jsonBody].
+  Future<Object?> get jsonBodyAsync {
+    return then((response) {
+      return _toRest(response).jsonBodyAsync;
+    });
+  }
 }

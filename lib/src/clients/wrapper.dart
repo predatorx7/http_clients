@@ -23,14 +23,14 @@ abstract class WrapperClient extends BaseClient {
   /// This will throw [ClientException] if [close] is called with `force` as
   /// `true` on this client.
   @protected
-  Client get client {
-    final inner = _inner;
-    if (inner == null) {
+  Client get inner {
+    final client = _inner;
+    if (client == null) {
       throw ClientException(
         'HTTP request failed. Client is already closed.',
       );
     }
-    return inner;
+    return client;
   }
 
   @override
@@ -45,14 +45,27 @@ abstract class WrapperClient extends BaseClient {
   /// called while other asynchronous methods are running, the behavior is
   /// undefined.
   ///
-  /// If [force] is `true` (the default) the [WrapperClient] might
-  /// not close the inner client.
-  void close({bool force = true}) {
+  /// When [force] is `true` (the default), the [WrapperClient] might
+  /// close the inner client. To avoid closing the inner client, set [force] to true.
+  ///
+  /// The optional [keepAliveHttpClient] parameter is used to specify an HTTP [Client]
+  /// that should not be closed by this [close] method. This can be useful for
+  /// HTTP clients that are used to make long-lived connections to remote
+  /// servers. If it is not specified, all internal HTTP clients will be closed
+  /// by this [close] method when [force] is `true`.
+  ///
+  /// Note: [force] is `true` by default to keep this [close]'s default
+  /// behaviour consistent with [Client.close] because [BaseClient.close]
+  /// doesn't have a parameter to avoid closing its inner client.
+  void close({
+    bool force = true,
+    Client? keepAliveHttpClient,
+  }) {
     if (!force) return;
     final client = _inner;
-    if (client == null) return;
+    if (client == null || client == keepAliveHttpClient) return;
     if (client is WrapperClient) {
-      client.close(force: force);
+      client.close(force: force, keepAliveHttpClient: keepAliveHttpClient);
     } else {
       client.close();
     }

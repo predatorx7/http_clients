@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
@@ -94,6 +96,6 @@ class RequestClient extends WrapperClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) {
-    return client.send(updateRequest(request));
+    return inner.send(updateRequest(request));
   }
 }

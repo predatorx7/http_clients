@@ -1,4 +1,4 @@
-import '../utils.dart';
+import '../utils/utils.dart';
 
 typedef FromJsonCallback<T> = T? Function(Object? json);
 

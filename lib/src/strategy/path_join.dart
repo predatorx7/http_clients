@@ -1,4 +1,4 @@
-import 'package:http_clients/src/utils.dart';
+import 'package:http_clients/src/utils/utils.dart';
 
 class PathJoinStrategy {
   PathJoinStrategy._();

@@ -48,7 +48,7 @@ class ConverterClient extends WrapperClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    final response = await client.send(await onConvertRequest(request));
+    final response = await inner.send(await onConvertRequest(request));
     final modifiedResponse = await onConvertResponse(response);
     return modifiedResponse;
   }

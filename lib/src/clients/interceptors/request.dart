@@ -29,6 +29,6 @@ class RequestInterceptorClient extends WrapperClient {
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
     onInterceptRequest(request);
-    return client.send(request);
+    return inner.send(request);
   }
 }

@@ -1,5 +1,5 @@
 import 'strategy/path_join.dart';
-import 'utils.dart';
+import 'utils/utils.dart';
 
 typedef PathJoinCallback = Iterable<String> Function(
   Uri originalUrl,
