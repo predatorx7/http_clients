@@ -13,19 +13,51 @@ class JsonModelSerializerError implements Exception {
   }
 }
 
+class JsonDeserializerOf<T extends Object> {
+  final FromJsonCallback<T> deserializeFromJson;
+
+  const JsonDeserializerOf(this.deserializeFromJson);
+
+  Type get objectType => T;
+
+  T? call(Object? json) => deserializeFromJson(json);
+
+  JsonDeserializerOf<List<T>> getJsonListSerializer() {
+    List<T>? fromJsonList(Object? object) {
+      if (object is! Iterable) return null;
+      if (object.isEmpty) return <T>[];
+      return object.map(deserializeFromJson).whereType<T>().toList();
+    }
+
+    return JsonDeserializerOf<List<T>>(fromJsonList);
+  }
+
+  static Map<Type, JsonDeserializerOf<Object>> from(
+    Iterable<JsonDeserializerOf<Object>> deserializers,
+  ) {
+    return <Type, JsonDeserializerOf<Object>>{
+      for (final deserializer in deserializers)
+        deserializer.objectType: deserializer,
+    };
+  }
+}
+
 /// A class that serializes and deserializes JSON objects to and from
 /// Dart classes.
 class JsonModelSerializer {
   JsonModelSerializer({
-    Map<Type, FromJsonCallback<Object>> deserializers = const {},
-  }) : _deserializers = {...deserializers};
+    Iterable<JsonDeserializerOf<Object>> deserializers = const [],
+    bool addListSerializer = true,
+  }) : _deserializers = {} {
+    addDeserializers(deserializers, addListSerializer: addListSerializer);
+  }
 
-  final Map<Type, FromJsonCallback<Object>> _deserializers;
+  final Map<Type, JsonDeserializerOf<Object>> _deserializers;
 
   FromJsonCallback<T> getDeserializer<T>() {
     final deserializer = _deserializers[T];
     if (deserializer != null) {
-      return deserializer as FromJsonCallback<T>;
+      return deserializer.deserializeFromJson as FromJsonCallback<T>;
     }
     throw JsonModelSerializerError('No deserializer found for type `$T`');
   }
@@ -34,31 +66,33 @@ class JsonModelSerializer {
     return _deserializers.containsKey(T);
   }
 
-  FromJsonCallback<T> addDeserializer<T>(FromJsonCallback<T> fromJson) {
-    assert(T != dynamic);
-    _deserializers[T] = fromJson;
-    return fromJson;
-  }
-
-  void addAllDeserializers(Map<Type, FromJsonCallback<Object>> other) {
-    _deserializers.addAll(other);
+  void addDeserializers(
+    Iterable<JsonDeserializerOf<Object>> deserializers, {
+    bool addListSerializer = true,
+  }) {
+    if (addListSerializer) {
+      final listDeserializers = [
+        for (final deserializer in deserializers)
+          deserializer.getJsonListSerializer(),
+      ];
+      _deserializers.addAll(JsonDeserializerOf.from(listDeserializers));
+    }
+    _deserializers.addAll(JsonDeserializerOf.from(deserializers));
   }
 
   void apply(JsonModelSerializer serializer) {
     _deserializers.addAll(serializer._deserializers);
   }
 
-  FromJsonCallback<T>? removeDeserializer<T>() {
+  JsonDeserializerOf<T>? removeDeserializer<T extends Object>([
+    bool removeAssociatedListDeserializer = true,
+  ]) {
     assert(T != dynamic);
-    final type = _getTypeFrom<List<T>>();
-    _deserializers.remove(type);
-    return _deserializers.remove(T) as FromJsonCallback<T>?;
-  }
-
-  FromJsonCallback<T> putDeserializerIfAbsent<T>(
-      FromJsonCallback<T> Function() ifAbsent) {
-    assert(T != dynamic);
-    return _deserializers.putIfAbsent(T, ifAbsent) as FromJsonCallback<T>;
+    if (removeAssociatedListDeserializer) {
+      final type = _getTypeFrom<List<T>>();
+      _deserializers.remove(type);
+    }
+    return _deserializers.remove(T) as JsonDeserializerOf<T>?;
   }
 
   T? deserialize<T>(Object? json) {
@@ -86,24 +120,8 @@ class JsonModelSerializer {
     }
     return serializers;
   }
-
-  FromJsonCallback<List<T>> addJsonListDeserializerOf<T>() {
-    assert(T != dynamic);
-    return addDeserializer<List<T>>(
-      getJsonListSerializer<T>(getDeserializer<T>()),
-    );
-  }
 }
 
 Type _getTypeFrom<T>() {
   return T;
-}
-
-FromJsonCallback<List<T>> getJsonListSerializer<T>(
-  FromJsonCallback<T> fromJson,
-) {
-  return (object) {
-    if (object is! Iterable) return null;
-    return object.map(fromJson).whereType<T>().toList();
-  };
 }

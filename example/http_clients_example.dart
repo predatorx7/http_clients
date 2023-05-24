@@ -7,8 +7,8 @@ final http.Client jsonPlaceholderClient = RequestClient(
 );
 
 void addAllDeserializers() {
-  JsonModelSerializer.common.addAllDeserializers({
-    TodoModel: (json) => TodoModel.fromJson(json),
+  JsonModelSerializer.common.addDeserializers({
+    JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
   });
 }
 
@@ -25,7 +25,7 @@ class TodoService extends RestService {
     return client.get(Uri(path: '$id')).dataAsync();
   }
 
-  Future<TodoModel?> getTodos() {
+  Future<List<TodoModel>?> getTodos() {
     return client.get(Uri()).dataAsync();
   }
 }

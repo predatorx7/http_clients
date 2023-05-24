@@ -114,9 +114,8 @@ class RestClientListAsyncSerializationBenchmark extends AsyncBenchmark {
         client,
       ),
       serializer: JsonModelSerializer(deserializers: {
-        TodoModel: (json) => TodoModel.fromJson(json),
-      })
-        ..addJsonListDeserializerOf<TodoModel>(),
+        JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+      }),
     );
   }
 
@@ -151,9 +150,8 @@ class RestClientListSerializationBenchmark extends AsyncBenchmark {
         client,
       ),
       serializer: JsonModelSerializer(deserializers: {
-        TodoModel: (json) => TodoModel.fromJson(json),
-      })
-        ..addJsonListDeserializerOf<TodoModel>(),
+        JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+      }),
     );
   }
 
@@ -221,7 +219,7 @@ class RestClientSingleAsyncSerializationBenchmark extends AsyncBenchmark {
         client,
       ),
       serializer: JsonModelSerializer(deserializers: {
-        TodoModel: (json) => TodoModel.fromJson(json),
+        JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
     );
   }
@@ -257,7 +255,7 @@ class RestClientSingleSerializationBenchmark extends AsyncBenchmark {
         client,
       ),
       serializer: JsonModelSerializer(deserializers: {
-        TodoModel: (json) => TodoModel.fromJson(json),
+        JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
     );
   }

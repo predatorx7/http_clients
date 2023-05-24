@@ -41,9 +41,8 @@ class AsyncJsonModelSerializerBenchmark extends AsyncBenchmarkBase {
   @override
   Future<void> setup() async {
     serializer = JsonModelSerializer(deserializers: {
-      TodoModel: (json) => TodoModel.fromJson(json),
-    })
-      ..addJsonListDeserializerOf<TodoModel>();
+      JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+    });
   }
 
   @override
@@ -60,9 +59,8 @@ class JsonModelSerializerBenchmark extends BenchmarkBase {
   @override
   void setup() {
     serializer = JsonModelSerializer(deserializers: {
-      TodoModel: (json) => TodoModel.fromJson(json),
-    })
-      ..addJsonListDeserializerOf<TodoModel>();
+      JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+    });
   }
 
   @override

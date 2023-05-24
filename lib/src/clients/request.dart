@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
@@ -44,7 +42,6 @@ class RequestClient extends WrapperClient {
     final hasEqualHeaders =
         const MapEquality().equals(headers, original.headers);
     if (hasEqualUrls && hasEqualHeaders) return original;
-
     final BaseRequest request;
     // Todo: Check if copying based on Request Type is faster
     // compared copying as StreamedRequest from finalized BaseRequest.
@@ -69,8 +66,7 @@ class RequestClient extends WrapperClient {
       // This makes a copy of the request data in order to support
       // resending it. This can cause a lot of memory usage when sending a large
       // [StreamedRequest].
-      request = StreamedRequest(
-          original.method, joinUrls(original.url, url, onJoinPath))
+      request = StreamedRequest(original.method, newUrl)
         ..contentLength = original.contentLength
         ..followRedirects = original.followRedirects
         ..headers.addAll(original.headers)
