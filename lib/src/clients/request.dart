@@ -20,7 +20,7 @@ class RequestClient extends WrapperClient {
 
   /// Decides path joining strategy.
   /// Defaults to [DefaultPathJoinStrategy].
-  final PathJoinStrategyCallback? pathJoinStrategy;
+  final PathJoinStrategyCallback pathJoinStrategy;
 
   /// Creates a [RequestClient] http client that can update the url
   /// and headers of a [BaseRequest] with [url], and [headers].
@@ -28,7 +28,7 @@ class RequestClient extends WrapperClient {
     Client client, {
     this.url,
     this.headers,
-    this.pathJoinStrategy,
+    this.pathJoinStrategy = PathJoinStrategy.new,
   }) : super(client);
 
   /// Returns an updated copy of [original] with the given [Request.body]
@@ -41,7 +41,7 @@ class RequestClient extends WrapperClient {
       original.url,
       url,
       PathJoinStrategy.onJoinPath(
-        pathJoinStrategy ?? (a, b) => PathJoinStrategy(a, b),
+        pathJoinStrategy,
       ),
     );
     final hasEqualUrls = original.url.toString() == newUrl.toString();

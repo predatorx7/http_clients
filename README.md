@@ -2,7 +2,7 @@
 
 <p align="center">
 <a href="https://pub.dev/packages/handle"><img src="https://img.shields.io/pub/v/handle.svg" alt="Pub"></a>
-<a href="https://github.com/predatorx7/handle/actions/workflows/handle.yaml"><img src="https://github.com/predatorx7/handle/actions/workflows/handle.yaml/badge.svg" alt="handle"></a>
+<a href="https://github.com/predatorx7/handle/actions/workflows/handle.yaml"><img src="https://github.com/predatorx7/handle/actions/workflows/handle_test.yaml/badge.svg" alt="handle"></a>
 <a href="https://codecov.io/gh/predatorx7/handle" >
 <img src="https://codecov.io/gh/predatorx7/handle/branch/main/graph/badge.svg?token=FIQIP0GYHK"/>
 </a>

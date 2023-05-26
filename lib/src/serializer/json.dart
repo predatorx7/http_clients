@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:quiver/core.dart' as quiver;
 import '../utils/utils.dart';
 
@@ -99,8 +101,7 @@ class JsonModelSerializer {
   ]) {
     assert(T != dynamic);
     if (removeAssociatedListDeserializer) {
-      final type = _getTypeFrom<List<T>>();
-      _deserializers.remove(type);
+      _deserializers.remove(List<T>);
     }
     return _deserializers.remove(T) as JsonDeserializerOf<T>?;
   }
@@ -112,7 +113,7 @@ class JsonModelSerializer {
   }
 
   Future<T?> deserializeAsync<T>(String body) {
-    return runInIsolate(() {
+    return Isolate.run(() {
       return deserialize<T>(body);
     }, debugName: 'deserializeAsync<$T>');
   }
@@ -130,8 +131,4 @@ class JsonModelSerializer {
     }
     return serializers;
   }
-}
-
-Type _getTypeFrom<T>() {
-  return T;
 }

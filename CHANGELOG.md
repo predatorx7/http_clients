@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Upgrade package:http to 1.0.0
+
 ## 0.2.0
 
 - Replace `PathJoinCallback onJoinPath` with `PathJoinStrategyCallback? pathJoinStrategy` in [RequestClient]
