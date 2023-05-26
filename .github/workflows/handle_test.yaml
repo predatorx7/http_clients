@@ -1,4 +1,4 @@
-name: handle
+name: handle_test
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v2
         with:
-          min_coverage: 60
+          min_coverage: 65
           path: coverage/lcov.info
 
       - name: Upload coverage to codecov
