@@ -2,37 +2,37 @@ import 'strategy/path_join.dart';
 import 'utils/utils.dart';
 
 typedef PathJoinCallback = Iterable<String> Function(
-  Uri originalUrl,
   Uri otherUrl,
+  Uri currentUrl,
 );
 
-/// Returns a url after joining [other] and [it].
+/// Returns a url after joining [current] and [other].
 ///
-/// [String] only [Uri] component from [it] is preferred because during usage,
+/// [String] only [Uri] component from [other] is preferred because during usage,
 /// this will be the last [Uri] received when making a request.
 ///
 /// Merging of paths is decided with the [onJoinPath] callback. Check [PathJoinStrategy]
 /// for more details.
 Uri joinUrls(
-  Uri it,
-  Uri? other,
+  Uri other,
+  Uri? current,
   PathJoinCallback onJoinPath,
 ) {
-  if (other == null) return it;
+  if (current == null) return other;
 
   return Uri(
-    scheme: whereStringNotBlankElseNull([it.scheme, other.scheme]),
-    userInfo: whereStringNotBlankElseNull([it.userInfo, other.userInfo]),
-    host: whereStringNotBlankElseNull([it.host, other.host]),
-    port: it.host.isNotEmpty ? it.port : other.port,
+    scheme: whereStringNotBlankElseNull([other.scheme, current.scheme]),
+    userInfo: whereStringNotBlankElseNull([other.userInfo, current.userInfo]),
+    host: whereStringNotBlankElseNull([other.host, current.host]),
+    port: other.host.isNotEmpty ? other.port : current.port,
     pathSegments: onJoinPath(
-      it,
       other,
+      current,
     ),
     queryParameters: mergeMapIfNotEmptyElseNull([
-      it.queryParameters,
       other.queryParameters,
+      current.queryParameters,
     ]),
-    fragment: whereStringNotBlankElseNull([it.fragment, other.fragment]),
+    fragment: whereStringNotBlankElseNull([other.fragment, current.fragment]),
   );
 }

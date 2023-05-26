@@ -25,9 +25,9 @@ class TodoModel {
   }
 }
 
-class TodoService {
+class TodoService extends RestService {
   TodoService([http.Client? client])
-      : _client = RestClient(
+      : super(
           RequestClient(
             client ?? http.Client(),
             url: Uri.https('jsonplaceholder.typicode.com', '/todos'),
@@ -37,17 +37,11 @@ class TodoService {
           }),
         );
 
-  final RestClient _client;
-
-  Future<TodoModel> getTodoById(int id) async {
-    final response = await _client.get(Uri(path: '/$id'));
-    return (await response.deserializeBodyAsync<TodoModel>())!;
+  Future<TodoModel?> getTodoById(int id) async {
+    return client.get(Uri(path: '/$id')).dataAsync();
   }
 
-  Future<List<TodoModel>> getTodos() async {
-    final response = await _client.get(Uri());
-    return (await response.deserializeBodyAsync<List<TodoModel>>())!;
+  Future<List<TodoModel>?> getTodos() async {
+    return client.get(Uri()).dataAsync();
   }
-
-  void dispose() => _client.close();
 }

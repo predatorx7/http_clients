@@ -1,18 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import '../clients/wrapper.dart';
-import '../serializer/json.dart';
 
 typedef WrapperClientBuilder = http.Client Function(http.Client client);
 
-class ServiceConfig {
+class HttpServiceConfig {
   final http.Client client;
-  final JsonModelSerializer? serializer;
   final WrapperClientBuilder? builder;
 
-  const ServiceConfig(
+  const HttpServiceConfig(
     this.client,
-    this.serializer,
     this.builder,
   );
 }
@@ -28,21 +25,27 @@ class HttpServiceException implements Exception {
   }
 }
 
+/// A service that uses [client] for making requests. It is recommend to extend
+/// this class and add your method and use the [client] to make requests in the
+/// methods to the server.
+///
 class HttpService<T extends http.Client> {
+  /// Creates an http server class that uses [client] in its method to make http
+  /// requests.
+  ///
+  /// The [builder] can be used to wrap [client] with wrapper http [http.Client]s.
   HttpService(
     http.Client client,
-    JsonModelSerializer? serializer,
     WrapperClientBuilder? builder,
-  ) : config = ServiceConfig(
+  ) : config = HttpServiceConfig(
           client,
-          serializer,
           builder,
         );
 
   HttpService.fromConfig(this.config);
 
   @protected
-  final ServiceConfig config;
+  final HttpServiceConfig config;
 
   T? _innerClient;
 
@@ -59,7 +62,7 @@ class HttpService<T extends http.Client> {
   }
 
   @protected
-  T buildClient(ServiceConfig config) {
+  T buildClient(HttpServiceConfig config) {
     final builder = config.builder;
     final client = config.client;
     if (builder != null) {
