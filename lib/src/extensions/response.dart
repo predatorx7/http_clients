@@ -10,41 +10,47 @@ RestResponse _toRest(http.Response response) {
   }
 }
 
+/// Extensions on [Future<http.Response>] to allow usage of some methods from
+/// [RestResponse] as a shortcut.
 extension ResponseFuture on Future<http.Response> {
-  /// Returns [T] by deserializing the response body to it.
-  /// The response is deserialized synchronously.
+  /// Returns the deserialized response body by calling
+  /// [RestResponse.deserializeBody] after converting the response to
+  /// [RestResponse].
   ///
-  /// For large response body, try [deserializeBodyAsync].
+  /// {@macro RestResponse.deserializeBody<T>}
   Future<T?> data<T>() {
     return then((response) {
       return _toRest(response).deserializeBody<T>();
     });
   }
 
-  /// Returns [T] by deserializing the response body to it.
-  /// The response is deserialized asynchronously in an isolate.
+  /// Returns the asynchronously deserialized response body by calling
+  /// [RestResponse.deserializeBodyAsync] after converting the response to
+  /// [RestResponse].
   ///
-  /// For small response body, try [deserializeBody].
+  /// {@macro RestResponse.deserializeBodyAsync<T>}
   Future<T?> dataAsync<T>() {
     return then((response) {
       return _toRest(response).deserializeBodyAsync<T>();
     });
   }
 
-  /// Returns the Json object by parsing the response body string.
-  /// The response is json decoded synchronously.
+  /// Returns the json object decoded from response body by calling
+  /// [RestResponse.jsonBody] after converting the response to
+  /// [RestResponse].
   ///
-  /// For large response body, try [jsonBodyAsync].
+  /// {@macro RestResponse.jsonBody}
   Future<Object?> get jsonBody {
     return then((response) {
       return _toRest(response).jsonBody;
     });
   }
 
-  /// Returns the Json object by parsing the response body string.
-  /// The response is json decoded asynchronously in an isolate.
+  /// Returns the json object decoded asynchronously from response body by
+  /// calling [RestResponse.jsonBody] after converting the response to
+  /// [RestResponse].
   ///
-  /// For small response body, try [jsonBody].
+  /// {@macro RestResponse.jsonBodyAsync}
   Future<Object?> get jsonBodyAsync {
     return then((response) {
       return _toRest(response).jsonBodyAsync;

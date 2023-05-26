@@ -7,6 +7,8 @@ final http.Client jsonPlaceholderClient = RequestClient(
 );
 
 void addAllDeserializers() {
+  // You can add deserializers to the common JsonModelSerializer so that every
+  // rest response can use it.
   JsonModelSerializer.common.addDeserializers({
     JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
   });
@@ -17,6 +19,8 @@ class TodoService extends RestService {
       : super(client, builder: (client) {
           return RequestClient(
             client,
+            // we don't have to write the full base url. Request client can
+            // merge these with url and headers from the wrapper clients.
             url: Uri(path: '/todos'),
           );
         });
@@ -30,6 +34,36 @@ class TodoService extends RestService {
   }
 }
 
+void main() async {
+  // You must add deserializers before you get a deserialized response from the
+  // RestClient.
+  addAllDeserializers();
+
+  // This is an example of service usage. You can use any other pattern that
+  // fits your need.
+  //
+  // By giving it a client, we have atleast 2 advantages:
+  //  1. This client can already have information about the base url, auth, etc.
+  //  2. It can be reused by other services.
+  final service = TodoService(jsonPlaceholderClient);
+
+  // Below, we creating a list of futures where we are waiting to getTodo
+  // for ids between 1-10.
+  await Future.wait(<Future>[
+    // Create 10 request to get todo for ids between 1-10 at the same time.
+    for (final id in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+      service.getTodo(id).then(print),
+  ]);
+
+  // another request to get all todos in single request.
+  // We'll print the response.
+  await service.getTodos().then(print);
+
+  // don't forget to dispose the service after usage.
+  service.dispose();
+}
+
+// A simple json serializable class
 class TodoModel {
   final int userId;
   final int id;
@@ -52,27 +86,4 @@ class TodoModel {
     final String status = completed ? 'completed' : 'pending';
     return 'Todo #$id "$title" is $status by user#$userId';
   }
-}
-
-void main() async {
-  addAllDeserializers();
-
-  final service = TodoService(jsonPlaceholderClient);
-
-  final ids = List.generate(10, (index) => index + 1);
-
-  final futures = <Future>[];
-  for (final id in ids) {
-    futures.add(service.getTodo(id).then((data) {
-      print(data);
-    }));
-  }
-
-  futures.add(service.getTodos().then((data) {
-    print(data);
-  }));
-
-  await Future.wait(futures);
-
-  service.dispose();
 }

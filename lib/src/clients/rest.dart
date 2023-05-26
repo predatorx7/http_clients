@@ -56,26 +56,32 @@ class RestResponse extends Response {
 
   final JsonModelSerializer serializer;
 
+  /// {@template RestResponse.jsonBody}
   /// Returns the Json object by parsing the response body string.
   /// The response is json decoded synchronously.
   ///
   /// For large response body, try [jsonBodyAsync].
+  /// {@endtemplate}
   Object? get jsonBody {
     return tryDecodeJson(body);
   }
 
+  /// {@template RestResponse.jsonBodyAsync}
   /// Returns the Json object by parsing the response body string.
   /// The response is json decoded asynchronously in an isolate.
   ///
   /// For small response body, try [jsonBody].
+  /// {@endtemplate}
   Future<Object?> get jsonBodyAsync {
     return runInIsolate(() => tryDecodeJson(body));
   }
 
+  /// {@template RestResponse.deserializeBody<T>}
   /// Returns [T] by deserializing the response body to it.
   /// The response is deserialized synchronously.
   ///
   /// For large response body, try [deserializeBodyAsync].
+  /// {@endtemplate}
   T? deserializeBody<T>() {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
@@ -92,10 +98,12 @@ class RestResponse extends Response {
     }
   }
 
+  /// {@template RestResponse.deserializeBodyAsync<T>}
   /// Returns [T] by deserializing the response body to it.
   /// The response is deserialized asynchronously in an isolate.
   ///
   /// For small response body, try [deserializeBody].
+  /// {@endtemplate}
   Future<T?> deserializeBodyAsync<T>() async {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
