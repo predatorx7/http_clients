@@ -2,11 +2,15 @@ name: handle_test
 
 on:
   push:
-    paths:
-      - ".github/workflows/handle.yaml"
+    paths-ignore:
+      - "docs/**"
+      - "website/**"
+      - "**.md"
   pull_request:
-    paths:
-      - ".github/workflows/handle.yaml"
+    paths-ignore:
+      - "docs/**"
+      - "website/**"
+      - "**.md"
   schedule:
     # runs the CI every first day of every month at 00:00 AM
     - cron: "0 0 1 * *"

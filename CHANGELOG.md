@@ -1,3 +1,7 @@
+## 0.3.1
+
+- Update package:http version constraint
+
 ## 0.3.0
 
 - Upgrade package:http to 1.0.0
