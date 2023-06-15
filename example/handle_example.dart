@@ -16,14 +16,21 @@ void addAllDeserializers() {
 
 class TodoService extends RestService {
   TodoService(http.Client client)
-      : super(client, builder: (client) {
-          return RequestClient(
-            client,
-            // we don't have to write the full base url. Request client can
-            // merge these with url and headers from the wrapper clients.
-            url: Uri(path: '/todos'),
-          );
-        });
+      : super(
+          client,
+          builder: (client) {
+            return RequestClient(
+              client,
+              // we don't have to write the full base url. Request client can
+              // merge these with url and headers from the wrapper clients.
+              url: Uri(path: '/todos'),
+            );
+          },
+          // Pass a serializer here if you want it to be used only within this
+          // TodoService. If not null, this service will create a new serializer
+          // from this and [JsonModelSerializer.common].
+          serializer: null,
+        );
 
   Future<TodoModel?> getTodo(int id) {
     return client.get(Uri(path: '$id')).dataAsync();
@@ -59,8 +66,11 @@ void main() async {
   // We'll print the response.
   await service.getTodos().then(print);
 
-  // don't forget to dispose the service after usage.
-  service.dispose();
+  // Don't forget to dispose the service after usage.
+  // Set `keepHttpClientAlive` to true if the
+  // underlying client, which was provided when creating TodoService, must not
+  // be disposed
+  service.dispose(keepHttpClientAlive: false);
 }
 
 // A simple json serializable class

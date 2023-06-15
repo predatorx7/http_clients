@@ -166,6 +166,14 @@ class RestResponse extends Response {
 /// when deserializing a response body and it does not inherit from serializers
 /// in the WrapperClient tree.
 class RestClient extends WrapperClient {
+  /// {@template RestClient.serializer}
+  /// The serializer that serializes and deserializes JSON objects to and from
+  /// Dart classes.
+  ///
+  /// If null, the [RestResponse] will use [JsonModelSerializer.common] for
+  /// deserialization. If not null, a [RestResponse] will create a new
+  /// serializer from this and [JsonModelSerializer.common].
+  /// {@endtemplate}
   JsonModelSerializer? serializer;
 
   RestClient(

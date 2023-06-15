@@ -5,6 +5,7 @@ import '../serializer/json.dart';
 import 'http.dart';
 
 class RestServiceConfig extends HttpServiceConfig {
+  /// {@macro RestClient.serializer}
   final JsonModelSerializer? serializer;
 
   const RestServiceConfig(

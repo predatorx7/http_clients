@@ -1,0 +1,31 @@
+dartdoc:
+  categories:
+    "Get started":
+      markdown: doc/get-started.md
+      name: Get started
+    "Configuration":
+      markdown: doc/configuration.md
+      name: Configuration
+    "Clients":
+      markdown: doc/clients.md
+      name: Clients
+    "Services":
+      markdown: doc/services.md
+      name: Services
+    "Error handling":
+      markdown: doc/error-handling.md
+      name: Error handling
+    # "breaking-changes-v1":
+    #   markdown: doc/breaking_changes/v1.md
+    #   name: Migrating to v1.0.0
+  categoryOrder:
+    - "Get started"
+    - "Configuration"
+    - "Clients"
+    - "Services"
+    - "Error handling"
+    # - "breaking-changes-v1"
+  showUndocumentedCategories: true
+  ignore:
+    - broken-link
+    - missing-from-search-index
