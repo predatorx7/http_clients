@@ -139,6 +139,25 @@ class RestResponse extends Response {
       reasonPhrase: response.reasonPhrase,
     );
   }
+
+  /// Creates a new HTTP response by waiting for the full body to become
+  /// available from a [StreamedResponse].
+  static Future<RestResponse> fromStream(
+    StreamedResponse response, [
+    JsonModelSerializer? serializer,
+  ]) async {
+    final body = await response.stream.toBytes();
+    return RestResponse.bytes(
+      body,
+      serializer: serializer,
+      response.statusCode,
+      request: response.request,
+      headers: response.headers,
+      isRedirect: response.isRedirect,
+      persistentConnection: response.persistentConnection,
+      reasonPhrase: response.reasonPhrase,
+    );
+  }
 }
 
 /// Creates a client that returns [RestResponse] for a request.
@@ -228,6 +247,14 @@ class RestClient extends WrapperClient {
         encoding: encoding,
       ),
     );
+  }
+
+  Future<RestResponse> multipart(
+    MultipartRequest request,
+  ) {
+    return send(
+      request,
+    ).then((response) => RestResponse.fromStream(response, serializer));
   }
 
   Future<RestResponse> _makeRest(Future<Response> response) async {

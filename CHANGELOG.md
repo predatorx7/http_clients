@@ -1,3 +1,7 @@
+## 0.3.2
+
+- Add [RestClient.multipart] for making multipart rest requests
+
 ## 0.3.1
 
 - Update package:http version constraint

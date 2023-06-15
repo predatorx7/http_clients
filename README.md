@@ -120,10 +120,12 @@ class TodoService extends RestService {
 ### Latest benchmark results
 
 ```
-HttpClientListSerializationBenchmark(RunTime): 11139330.0 us.
-RestClientListSerializationBenchmark(RunTime): 11221641.0 us.
-RestClientListAsyncSerializationBenchmark(RunTime): 11289030.0 us.
-HttpClientSingleSerializationBenchmark(RunTime): 316030.85714285716 us.
-RestClientSingleSerializationBenchmark(RunTime): 317782.0 us.
-RestClientSingleAsyncSerializationBenchmark(RunTime): 329862.4285714286 us.
+HttpClientListSerializationBenchmark(RunTime): 10462919.0 us.
+RestClientListSerializationBenchmark(RunTime): 10433037.0 us.
+RestClientListAsyncSerializationBenchmark(RunTime): 10651653.0 us.
+HttpClientSingleSerializationBenchmark(RunTime): 313983.85714285716 us.
+RestClientSingleSerializationBenchmark(RunTime): 314514.85714285716 us.
+RestClientSingleAsyncSerializationBenchmark(RunTime): 313982.4285714286 us.
 ```
+
+Benchmarks last updated on 15 June, 2023.

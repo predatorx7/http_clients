@@ -6,6 +6,12 @@ repository: https://github.com/predatorx7/handle
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
+topics:
+ - network
+ - http
+ - rest
+ - client
+
 dependencies:
   collection: ^1.0.0
   http: ">=0.13.0 <2.0.0"
