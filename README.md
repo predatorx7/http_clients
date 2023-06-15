@@ -8,7 +8,7 @@
 </a>
 </p>
 
-A simple library for composing HTTP clients, and creating services to make HTTP requests that uses the [package:http's Client](https://pub.dev/documentation/http/latest/http/Client-class.html).
+A simple library for composing HTTP clients, and creating services to make HTTP requests. Uses the [package:http's Client](https://pub.dev/documentation/http/latest/http/Client-class.html).
 
 ## Features
 

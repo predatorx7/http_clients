@@ -9,6 +9,7 @@ typedef RequestInterceptorCallback = void Function(
   BaseRequest,
 );
 
+/// {@category Clients}
 class RequestInterceptorClient extends WrapperClient {
   final Iterable<RequestInterceptorCallback> interceptors;
 

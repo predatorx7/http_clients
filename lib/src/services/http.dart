@@ -29,6 +29,9 @@ class HttpServiceException implements Exception {
 /// this class and add your method and use the [client] to make requests in the
 /// methods to the server.
 ///
+/// {@category Configuration}
+/// {@category Get started}
+/// {@category Services}
 class HttpService<T extends http.Client> {
   /// Creates an http server class that uses [client] in its method to make http
   /// requests.

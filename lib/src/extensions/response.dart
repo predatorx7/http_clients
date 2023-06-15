@@ -6,6 +6,9 @@ import '../clients/rest.dart';
 
 /// Extensions on [Future<http.Response>] to allow usage of some methods from
 /// [RestResponse] as a shortcut.
+///
+/// {@category Extensions}
+/// {@category Error handling}
 extension ResponseFuture on Future<http.Response> {
   static RestResponse _toRest(http.Response response) {
     if (response is RestResponse) {
@@ -64,6 +67,8 @@ extension ResponseFuture on Future<http.Response> {
   }
 }
 
+/// {@category Extensions}
+/// {@category Error handling}
 extension StreamedResponseFuture on Future<http.StreamedResponse> {
   static Future<RestResponse> _toRest(http.StreamedResponse response) {
     return RestResponse.fromStream(response);

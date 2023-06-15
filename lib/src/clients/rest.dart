@@ -8,6 +8,7 @@ import '../serializer/json.dart';
 import '../utils/utils.dart';
 import 'wrapper.dart';
 
+/// {@category Clients}
 class RestResponseException extends ClientException {
   final Object? innerException;
   final StackTrace? innerStackTrace;
@@ -81,7 +82,7 @@ class RestResponse extends Response {
   /// Returns [T] by deserializing the response body to it.
   /// The response is deserialized synchronously.
   ///
-  /// For large response body, try [deserializeBodyAsync].
+  /// For large response body, try [RestResponse.deserializeBodyAsync].
   /// {@endtemplate}
   T? deserializeBody<T>() {
     if (!serializer.contains<T>()) {
@@ -103,7 +104,7 @@ class RestResponse extends Response {
   /// Returns [T] by deserializing the response body to it.
   /// The response is deserialized asynchronously in an isolate.
   ///
-  /// For small response body, try [deserializeBody].
+  /// For small response body, try [RestResponse.deserializeBody].
   /// {@endtemplate}
   Future<T?> deserializeBodyAsync<T>() async {
     if (!serializer.contains<T>()) {
@@ -165,6 +166,10 @@ class RestResponse extends Response {
 /// The [RestResponse] will use only [serializer], and [JsonModelSerializer.common]
 /// when deserializing a response body and it does not inherit from serializers
 /// in the WrapperClient tree.
+///
+/// {@category Clients}
+/// {@category Configuration}
+/// {@category Get started}
 class RestClient extends WrapperClient {
   /// {@template RestClient.serializer}
   /// The serializer that serializes and deserializes JSON objects to and from

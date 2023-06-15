@@ -33,8 +33,8 @@ Note: This could take more memory incase of big request body because it may crea
 
 ### RestClient
 
-- Any request returns a [RestResponse]. [RestResponse] has a `deserialize<T>()` & `deserializeAsync<T>()` for getting json string data from the request as a class.
-- Deserializer for any type `T` must be added to the [JsonModelSerializer] in [RestClient]'s contructor or in [JsonModelSerializer.common].
+- Any request returns a [RestResponse](https://pub.dev/documentation/handle/latest/handle/RestResponse-class.html). [RestResponse](https://pub.dev/documentation/handle/latest/handle/RestResponse-class.html) has a `deserialize<T>()` & `deserializeAsync<T>()` for getting json string data from the request as a class.
+- Deserializer for any type `T` must be added to the [JsonModelSerializer](https://pub.dev/documentation/handle/latest/handle/JsonModelSerializer-class.html) in [RestClient](https://pub.dev/documentation/handle/latest/handle/RestClient-class.html)'s contructor or in [JsonModelSerializer.common](https://pub.dev/documentation/handle/latest/handle/JsonModelSerializer/common.html).
 
 Below is a simple use of this client. 
 ```dart

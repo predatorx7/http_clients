@@ -56,6 +56,9 @@ class JsonDeserializerOf<T extends Object> {
 
 /// A class that serializes and deserializes JSON objects to and from
 /// Dart classes.
+///
+/// {@category Configuration}
+/// {@category Get started}
 class JsonModelSerializer {
   JsonModelSerializer({
     Iterable<JsonDeserializerOf<Object>> deserializers = const [],

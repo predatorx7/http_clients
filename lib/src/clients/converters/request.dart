@@ -9,6 +9,7 @@ typedef RequestConverterCallback = FutureOr<BaseRequest> Function(
   BaseRequest,
 );
 
+/// {@category Clients}
 class RequestConverterClient extends WrapperClient {
   final Iterable<RequestConverterCallback> converters;
 

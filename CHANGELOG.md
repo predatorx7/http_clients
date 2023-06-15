@@ -1,3 +1,7 @@
+## 0.3.2+1
+
+- Update documentation
+
 ## 0.3.2
 
 - Add [RestClient.multipart] for making multipart rest requests

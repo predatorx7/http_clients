@@ -19,6 +19,10 @@ class RestServiceConfig extends HttpServiceConfig {
 /// [client] with [RestClient] if necessary to return a [RestResponse]. It is
 /// recommended to extend this class and add your methods to it where you use
 /// [client] to make requests.
+///
+/// {@category Configuration}
+/// {@category Get started}
+/// {@category Services}
 class RestService extends HttpService<RestClient> {
   RestService(
     http.Client client, {

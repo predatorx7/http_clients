@@ -7,6 +7,10 @@ import 'package:meta/meta.dart';
 /// [Client] without having to modify the [Client] class itself. For example, a
 /// [WrapperClient] could be used to add logging or caching functionality to a
 /// [Client].
+///
+/// {@category Clients}
+/// {@category Configuration}
+/// {@category Error handling}
 abstract class WrapperClient extends BaseClient {
   /// Creates a new [WrapperClient] with the given [client].
   ///

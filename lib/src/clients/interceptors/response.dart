@@ -9,6 +9,7 @@ typedef ResponseInterceptorCallback = void Function(
   StreamedResponse,
 );
 
+/// {@category Clients}
 class ResponseInterceptorClient extends WrapperClient {
   final Iterable<ResponseInterceptorCallback> interceptors;
 

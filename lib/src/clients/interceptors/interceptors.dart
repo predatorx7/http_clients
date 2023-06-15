@@ -8,6 +8,7 @@ import 'response.dart';
 export 'request.dart';
 export 'response.dart';
 
+/// {@category Clients}
 class InterceptorClient extends WrapperClient {
   final Iterable<RequestInterceptorCallback>? requestInterceptors;
   final Iterable<ResponseInterceptorCallback>? responseInterceptors;

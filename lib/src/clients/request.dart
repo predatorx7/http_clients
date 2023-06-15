@@ -9,6 +9,9 @@ import 'wrapper.dart';
 /// A client that overrides [url], [headers] of the request.
 ///
 /// Use [pathJoinStrategy] to decide path joining strategy.
+///
+/// {@category Clients}
+/// {@category Get started}
 class RequestClient extends WrapperClient {
   /// If not null, this will merge with the url in the request.
   ///

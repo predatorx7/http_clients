@@ -10,6 +10,7 @@ import 'response.dart';
 export 'request.dart';
 export 'response.dart';
 
+/// {@category Clients}
 class ConverterClient extends WrapperClient {
   final Iterable<RequestConverterCallback>? requestConverters;
   final Iterable<ResponseConverterCallback>? responseConverters;

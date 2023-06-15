@@ -9,6 +9,7 @@ typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
+/// {@category Clients}
 class ResponseConverterClient extends WrapperClient {
   final Iterable<ResponseConverterCallback> converters;
 
