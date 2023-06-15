@@ -12,6 +12,9 @@ dartdoc:
     "Services":
       markdown: doc/services.md
       name: Services
+    "Extensions":
+      markdown: doc/extensions.md
+      name: Extensions
     "Error handling":
       markdown: doc/error-handling.md
       name: Error handling
@@ -23,6 +26,7 @@ dartdoc:
     - "Configuration"
     - "Clients"
     - "Services"
+    - "Extensions"
     - "Error handling"
     # - "breaking-changes-v1"
   showUndocumentedCategories: true

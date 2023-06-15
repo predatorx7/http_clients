@@ -26,6 +26,7 @@ See the API documentation for details on the following topics:
 - [Configuration](https://pub.dev/documentation/handle/latest/topics/Configuration-topic.html)
 - [Clients](https://pub.dev/documentation/handle/latest/topics/Clients-topic.html)
 - [Services](https://pub.dev/documentation/handle/latest/topics/Services-topic.html)
+- [Extensions](https://pub.dev/documentation/handle/latest/topics/Extensions-topic.html)
 - [Error handling](https://pub.dev/documentation/handle/latest/topics/Error%20handling-topic.html)
 - [Example](https://pub.dev/packages/handle/example)
 

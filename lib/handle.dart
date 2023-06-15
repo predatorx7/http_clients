@@ -1,5 +1,7 @@
 library handle;
 
+export 'package:http/http.dart';
+
 export 'src/clients/clients.dart';
 export 'src/extensions/extensions.dart';
 export 'src/serializer/serializer.dart';

@@ -28,3 +28,5 @@ class TodoService extends RestService {
   }
 }
 ```
+
+More detailed example: [Request Client Example](https://github.com/predatorx7/handle/blob/main/example/api/services/rest.dart)

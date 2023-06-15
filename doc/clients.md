@@ -27,6 +27,8 @@ final client = RequestClient(
 final httpResponse = service.get(Uri(path: '/sample')).jsonBody;
 ```
 
+More detailed example: [Request Client Example](https://github.com/predatorx7/handle/blob/main/example/api/clients/request.dart)
+
 Note: This could take more memory incase of big request body because it may create a copy of request. I'm still trying to figure out a way to measure and reduce this cost.
 
 ### RestClient

@@ -15,7 +15,7 @@ extension ResponseFuture on Future<http.Response> {
     }
   }
 
-  Future<R> thenRest<R>(FutureOr<R> Function(RestResponse) onValue) {
+  Future<R> _thenRest<R>(FutureOr<R> Function(RestResponse) onValue) {
     return then((response) => onValue(_toRest(response)));
   }
 
@@ -25,7 +25,7 @@ extension ResponseFuture on Future<http.Response> {
   ///
   /// {@macro RestResponse.deserializeBody<T>}
   Future<T?> data<T>() {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.deserializeBody<T>();
     });
   }
@@ -36,7 +36,7 @@ extension ResponseFuture on Future<http.Response> {
   ///
   /// {@macro RestResponse.deserializeBodyAsync<T>}
   Future<T?> dataAsync<T>() {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.deserializeBodyAsync<T>();
     });
   }
@@ -47,7 +47,7 @@ extension ResponseFuture on Future<http.Response> {
   ///
   /// {@macro RestResponse.jsonBody}
   Future<Object?> get jsonBody {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.jsonBody;
     });
   }
@@ -58,7 +58,7 @@ extension ResponseFuture on Future<http.Response> {
   ///
   /// {@macro RestResponse.jsonBodyAsync}
   Future<Object?> get jsonBodyAsync {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.jsonBodyAsync;
     });
   }
@@ -69,7 +69,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
     return RestResponse.fromStream(response);
   }
 
-  Future<R> thenRest<R>(FutureOr<R> Function(RestResponse) onValue) {
+  Future<R> _thenRest<R>(FutureOr<R> Function(RestResponse) onValue) {
     return then((response) => _toRest(response).then(onValue));
   }
 
@@ -79,7 +79,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   ///
   /// {@macro RestResponse.deserializeBody<T>}
   Future<T?> data<T>() {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.deserializeBody<T>();
     });
   }
@@ -90,7 +90,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   ///
   /// {@macro RestResponse.deserializeBodyAsync<T>}
   Future<T?> dataAsync<T>() {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.deserializeBodyAsync<T>();
     });
   }
@@ -101,7 +101,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   ///
   /// {@macro RestResponse.jsonBody}
   Future<Object?> get jsonBody {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.jsonBody;
     });
   }
@@ -112,7 +112,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   ///
   /// {@macro RestResponse.jsonBodyAsync}
   Future<Object?> get jsonBodyAsync {
-    return thenRest((restResponse) {
+    return _thenRest((restResponse) {
       return restResponse.jsonBodyAsync;
     });
   }

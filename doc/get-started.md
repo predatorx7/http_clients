@@ -2,17 +2,72 @@
 
 ## Install
 
-Add this package to your app or package
-
-### Install from pub.dev
-
-Run `dart pub add handle` or `flutter pub add handle`
+Follow the
+[package installation instructions](https://pub.dev/packages/handle/install)
 
 ### Install from git
 
 Add to your dependencies in `pubspec.yaml`
+
 ```yaml
-  handle:
-    git: 
-      url: https://github.com/predatorx7/handle.git
+handle:
+  git: 
+    url: https://github.com/predatorx7/handle.git
+```
+
+## Usage
+
+Add handle package to your app and create your client to make an API request.
+
+```dart
+import 'package:handle/handle.dart';
+
+// You can add deserializers to the common JsonModelSerializer so that every
+// rest response can use it.
+JsonModelSerializer.common.addDeserializers({
+  JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+});
+
+final jsonPlaceholderClient = RequestClient(
+  Client(),
+  url: Uri.https('jsonplaceholder.typicode.com'),
+);
+
+final todos = await jsonPlaceholderClient.get(Uri(path: '/todos')).dataAsync<List<TodoModel>>();
+
+for (final todo in todos!) {
+  print(todo);
+}
+```
+
+Alternatively, you can create a REST service too.
+
+```dart
+import 'package:handle/handle.dart';
+
+class JsonplaceholderService extends RestService {
+  JsonplaceholderService()
+      : super(RequestClient(
+          Client(),
+          url: Uri.https('jsonplaceholder.typicode.com'),
+        ));
+
+  Future<List<TodoModel>?> getTodos() {
+    return client.get(Uri(path: '/todos')).dataAsync<List<TodoModel>>();
+  }
+}
+
+// You can add deserializers to the common JsonModelSerializer so that every
+// rest response can use it.
+JsonModelSerializer.common.addDeserializers({
+  JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
+});
+
+final service = JsonplaceholderService();
+
+final todos = await service.getTodos();
+
+for (final todo in todos!) {
+  print(todo);
+}
 ```
