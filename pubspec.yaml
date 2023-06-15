@@ -11,6 +11,7 @@ topics:
  - http
  - rest
  - client
+ - rest
 
 dependencies:
   collection: ^1.0.0
