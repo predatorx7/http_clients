@@ -71,3 +71,9 @@ for (final todo in todos!) {
   print(todo);
 }
 ```
+
+For a complete sample, see the [Rest Service & Request Client sample][] in the example directory.
+For more on how to configure clients in `handle`, see [Configuration].
+
+[Rest Service & Request Client sample]: https://github.com/predatorx7/handle/tree/main/example/api
+[Configuration]: https://pub.dev/documentation/handle/latest/topics/Configuration-topic.html

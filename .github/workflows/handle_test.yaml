@@ -2,8 +2,6 @@ name: handle_test
 
 on:
   push:
-    tags-ignore:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
     paths-ignore:
       - "docs/**"
       - "website/**"
