@@ -93,7 +93,12 @@ class RequestClient extends WrapperClient {
     }
 
     if (headers != null) {
-      request.headers.addAll(headers!);
+      final absentHeaders = headers?.entries.where(
+        (e) => !request.headers.containsKey(e.key),
+      );
+      if (absentHeaders != null && absentHeaders.isNotEmpty) {
+        request.headers.addEntries(absentHeaders);
+      }
     }
 
     return request;
