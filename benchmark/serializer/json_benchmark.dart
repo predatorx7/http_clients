@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:handle/handle.dart';
+
+import '../benchmark.dart';
 
 class TodoModel {
   final int userId;
@@ -27,9 +30,18 @@ class TodoModel {
   }
 }
 
-void main() {
-  AsyncJsonModelSerializerBenchmark().report();
-  JsonModelSerializerBenchmark().report();
+void main() async {
+  final runner = BenchmarkRunner(
+    asyncBenchmarks: [
+      AsyncJsonModelSerializerBenchmark(),
+    ],
+    benchmarks: [
+      JsonModelSerializerBenchmark(),
+      JsonDecodeBenchmark(),
+    ],
+  );
+
+  await runner.run();
 }
 
 class AsyncJsonModelSerializerBenchmark extends AsyncBenchmarkBase {
@@ -47,7 +59,8 @@ class AsyncJsonModelSerializerBenchmark extends AsyncBenchmarkBase {
 
   @override
   Future<void> run() async {
-    await serializer.deserializeAsync<List<TodoModel>>(_data);
+    final data = await serializer.deserializeAsync<List<TodoModel>>(_data);
+    _useData(data);
   }
 }
 
@@ -65,8 +78,24 @@ class JsonModelSerializerBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    serializer.deserialize<List<TodoModel>>(_data);
+    final data = serializer.deserialize<List<TodoModel>>(_data);
+    _useData(data);
   }
+}
+
+class JsonDecodeBenchmark extends BenchmarkBase {
+  JsonDecodeBenchmark() : super('JsonDecodeBenchmark');
+
+  @override
+  void run() {
+    final values = json.decode(_data);
+    final data = (values as List).map(TodoModel.fromJson).toList();
+    _useData(data);
+  }
+}
+
+void _useData(List<TodoModel>? data) {
+  data?.length;
 }
 
 const _data = '''[

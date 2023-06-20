@@ -9,7 +9,8 @@ class JsonplaceholderService extends RestService {
           RequestClient(
             Client(),
             url: Uri.https('jsonplaceholder.typicode.com'),
-          ), // Pass a serializer here if you want it to be used only within this
+          ),
+          // Pass a serializer here if you want it to be used only within this
           // TodoService. If not null, this service will create a new serializer
           // from this and [JsonModelSerializer.common].
           serializer: null,

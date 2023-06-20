@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:handle/handle.dart';
-import 'package:mockito/mockito.dart';
+import 'package:shelf/shelf.dart' show Response;
 
-import '../../test/rest.mocks.dart';
+import '../../test/test_server.dart';
 import '../benchmark.dart';
 
 class TodoModel {
@@ -33,8 +33,6 @@ class TodoModel {
 }
 
 void main() async {
-  _loadFakeResponseBody();
-
   final runner = BenchmarkRunner(
     asyncBenchmarks: [
       HttpClientListSerializationBenchmark(),
@@ -49,43 +47,35 @@ void main() async {
   await runner.run();
 }
 
-late String _fakeResponseBodySingle;
-late String _fakeResponseBodyList;
-void _loadFakeResponseBody() {
-  _fakeResponseBodySingle = json.encode({
+String _getFakeResponseBodySingle() {
+  return json.encode({
     "userId": 1,
     "id": 1,
     "title": "delectus aut autem",
     "completed": false
   });
-  _fakeResponseBodyList = json.encode([
+}
+
+String _getFakeResponseBodyList() {
+  return json.encode([
     for (var i = 0; i < 10000; i++)
       {"userId": 1, "id": 1, "title": "delectus aut autem", "completed": false},
   ]);
 }
 
-String _getFakeResponseBodySingle() {
-  return _fakeResponseBodySingle;
-}
+Future<void> responseDelay() => Future.delayed(Duration(milliseconds: 50));
 
-String _getFakeResponseBodyList() {
-  return _fakeResponseBodyList;
-}
-
-Future<http.StreamedResponse> _createFakeSingleResponse() async {
-  await Future.delayed(Duration(milliseconds: 10));
-  return http.StreamedResponse(
-    Stream.value(utf8.encode(_getFakeResponseBodySingle())),
-    200,
-  );
-}
-
-Future<http.StreamedResponse> _createFakeListResponse() async {
-  await Future.delayed(Duration(milliseconds: 500));
-  return http.StreamedResponse(
-    Stream.value(utf8.encode(_getFakeResponseBodyList())),
-    200,
-  );
+Future<TestServer> _createFakeServer() {
+  return startTestHttpServer((app) {
+    app.get('/single', (_) async {
+      await responseDelay();
+      return Response.ok(_getFakeResponseBodySingle());
+    });
+    app.get('/list', (_) async {
+      await responseDelay();
+      return Response.ok(_getFakeResponseBodyList());
+    });
+  });
 }
 
 void _useData(List<TodoModel> models) {
@@ -95,24 +85,16 @@ void _useData(List<TodoModel> models) {
 class RestClientListAsyncSerializationBenchmark extends AsyncBenchmark {
   RestClientListAsyncSerializationBenchmark()
       : super('RestClientListAsyncSerializationBenchmark');
-  late RestClient service;
+  late RestClient handleClient;
+  late TestServer _server;
 
   @override
   Future<void> setup() async {
-    final client = MockClient();
+    _server = await _createFakeServer();
+    final client = RequestClient(http.Client(), url: _server.uri);
 
-    when(
-      client.send(any),
-    ).thenAnswer(
-      (_) {
-        return _createFakeListResponse();
-      },
-    );
-
-    service = RestClient(
-      RequestClient(
-        client,
-      ),
+    handleClient = RestClient(
+      client,
       serializer: JsonModelSerializer(deserializers: {
         JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
@@ -121,34 +103,31 @@ class RestClientListAsyncSerializationBenchmark extends AsyncBenchmark {
 
   @override
   Future<void> run() async {
-    final response = await service.get(Uri());
+    final response = await handleClient.get(Uri(path: '/list'));
     final data = (await response.deserializeBodyAsync<List<TodoModel>>())!;
     _useData(data);
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    handleClient.close();
+    _server.server.close();
+  }
 }
 
 class RestClientListSerializationBenchmark extends AsyncBenchmark {
   RestClientListSerializationBenchmark()
       : super('RestClientListSerializationBenchmark');
-  late RestClient service;
+  late RestClient handleClient;
+  late TestServer _server;
 
   @override
   Future<void> setup() async {
-    final client = MockClient();
+    _server = await _createFakeServer();
+    final client = RequestClient(http.Client(), url: _server.uri);
 
-    when(
-      client.send(any),
-    ).thenAnswer((_) {
-      return _createFakeListResponse();
-    });
-
-    service = RestClient(
-      RequestClient(
-        client,
-      ),
+    handleClient = RestClient(
+      client,
       serializer: JsonModelSerializer(deserializers: {
         JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
@@ -157,36 +136,36 @@ class RestClientListSerializationBenchmark extends AsyncBenchmark {
 
   @override
   Future<void> run() async {
-    final response = await service.get(Uri());
+    final response = await handleClient.get(Uri(path: '/list'));
     final data = response.deserializeBody<List<TodoModel>>()!;
     _useData(data);
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    handleClient.close();
+    _server.server.close();
+  }
 }
 
 class HttpClientListSerializationBenchmark extends AsyncBenchmark {
   HttpClientListSerializationBenchmark()
       : super('HttpClientListSerializationBenchmark');
 
-  late MockClient client;
+  late http.Client client;
+  late TestServer _server;
+
   @override
   Future<void> setup() async {
-    client = MockClient();
-
-    when(
-      client.get(any),
-    ).thenAnswer(
-      (_) async {
-        return http.Response.fromStream(await _createFakeListResponse());
-      },
-    );
+    _server = await _createFakeServer();
+    client = http.Client();
   }
 
   @override
   Future<void> run() async {
-    final response = await client.get(Uri());
+    final response = await client.get(_server.uri.replace(
+      path: '/list',
+    ));
     final jsonBody = json.decode(response.body);
     final data =
         (jsonBody as Iterable).map((json) => TodoModel.fromJson(json)).toList();
@@ -194,30 +173,25 @@ class HttpClientListSerializationBenchmark extends AsyncBenchmark {
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    client.close();
+    _server.server.close();
+  }
 }
 
 class RestClientSingleAsyncSerializationBenchmark extends AsyncBenchmark {
   RestClientSingleAsyncSerializationBenchmark()
       : super('RestClientSingleAsyncSerializationBenchmark');
-  late RestClient service;
+  late RestClient handleClient;
+  late TestServer _server;
 
   @override
   Future<void> setup() async {
-    final client = MockClient();
+    _server = await _createFakeServer();
+    final client = RequestClient(http.Client(), url: _server.uri);
 
-    when(
-      client.send(any),
-    ).thenAnswer(
-      (_) {
-        return _createFakeSingleResponse();
-      },
-    );
-
-    service = RestClient(
-      RequestClient(
-        client,
-      ),
+    handleClient = RestClient(
+      client,
       serializer: JsonModelSerializer(deserializers: {
         JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
@@ -226,34 +200,31 @@ class RestClientSingleAsyncSerializationBenchmark extends AsyncBenchmark {
 
   @override
   Future<void> run() async {
-    final response = await service.get(Uri());
+    final response = await handleClient.get(Uri(path: '/single'));
     final data = (await response.deserializeBodyAsync<TodoModel>())!;
     _useData([data]);
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    handleClient.close();
+    _server.server.close();
+  }
 }
 
 class RestClientSingleSerializationBenchmark extends AsyncBenchmark {
   RestClientSingleSerializationBenchmark()
       : super('RestClientSingleSerializationBenchmark');
-  late RestClient service;
+  late RestClient handleClient;
+  late TestServer _server;
 
   @override
   Future<void> setup() async {
-    final client = MockClient();
+    _server = await _createFakeServer();
+    final client = RequestClient(http.Client(), url: _server.uri);
 
-    when(
-      client.send(any),
-    ).thenAnswer((_) {
-      return _createFakeSingleResponse();
-    });
-
-    service = RestClient(
-      RequestClient(
-        client,
-      ),
+    handleClient = RestClient(
+      client,
       serializer: JsonModelSerializer(deserializers: {
         JsonDeserializerOf<TodoModel>((json) => TodoModel.fromJson(json)),
       }),
@@ -262,41 +233,44 @@ class RestClientSingleSerializationBenchmark extends AsyncBenchmark {
 
   @override
   Future<void> run() async {
-    final response = await service.get(Uri());
+    final response = await handleClient.get(Uri(path: '/single'));
     final data = response.deserializeBody<TodoModel>()!;
     _useData([data]);
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    handleClient.close();
+    _server.server.close();
+  }
 }
 
 class HttpClientSingleSerializationBenchmark extends AsyncBenchmark {
   HttpClientSingleSerializationBenchmark()
       : super('HttpClientSingleSerializationBenchmark');
 
-  late MockClient client;
+  late http.Client client;
+  late TestServer _server;
+
   @override
   Future<void> setup() async {
-    client = MockClient();
-
-    when(
-      client.get(any),
-    ).thenAnswer(
-      (_) async {
-        return http.Response.fromStream(await _createFakeSingleResponse());
-      },
-    );
+    _server = await _createFakeServer();
+    client = http.Client();
   }
 
   @override
   Future<void> run() async {
-    final response = await client.get(Uri());
+    final response = await client.get(_server.uri.replace(
+      path: '/single',
+    ));
     final jsonBody = json.decode(response.body);
     final data = TodoModel.fromJson(jsonBody);
     _useData([data]);
   }
 
   @override
-  Future<void> teardown() async {}
+  Future<void> teardown() async {
+    client.close();
+    _server.server.close();
+  }
 }

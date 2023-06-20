@@ -1,3 +1,7 @@
+## 0.3.3
+
+- Update `benchmarks/`
+
 ## 0.3.2+1
 
 - Update documentation

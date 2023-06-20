@@ -29,3 +29,5 @@ dev_dependencies:
       url: https://github.com/dart-lang/http.git
       path: pkgs/http_client_conformance_tests/
       ref: ba84ac0
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4

@@ -39,12 +39,12 @@ See the API documentation for details on the following topics:
 For comparing client performance from this package, I've included benchmarks for this library's clients, and [package:http's Client](https://pub.dev/documentation/http/latest/http/Client-class.html) with no external dependency in `benchmarks/` directory.
 
 ```
-HttpClientListSerializationBenchmark(RunTime): 10462919.0 us.
-RestClientListSerializationBenchmark(RunTime): 10433037.0 us.
-RestClientListAsyncSerializationBenchmark(RunTime): 10651653.0 us.
-HttpClientSingleSerializationBenchmark(RunTime): 313983.85714285716 us.
-RestClientSingleSerializationBenchmark(RunTime): 314514.85714285716 us.
-RestClientSingleAsyncSerializationBenchmark(RunTime): 313982.4285714286 us.
+HttpClientListSerializationBenchmark(RunTime): 1788231.5 us.
+RestClientListSerializationBenchmark(RunTime): 1745168.5 us.
+RestClientListAsyncSerializationBenchmark(RunTime): 1832672.0 us.
+HttpClientSingleSerializationBenchmark(RunTime): 1257598.0 us.
+RestClientSingleSerializationBenchmark(RunTime): 1257561.0 us.
+RestClientSingleAsyncSerializationBenchmark(RunTime): 1262549.0 us.
 ```
 
-Benchmarks last updated on 15 June, 2023.
+Benchmarks last updated on 20 June, 2023.
