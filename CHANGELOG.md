@@ -1,6 +1,7 @@
 ## 0.3.2+1
 
 - Update documentation
+- Add missing `content-type: application/json` header in RestService
 
 ## 0.3.2
 

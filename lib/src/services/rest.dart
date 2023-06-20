@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import '../clients/request.dart';
 import '../clients/rest.dart';
 import '../serializer/json.dart';
 import 'http.dart';
@@ -30,7 +31,10 @@ class RestService extends HttpService<RestClient> {
     WrapperClientBuilder? builder,
   }) : super.fromConfig(
           RestServiceConfig(
-            client,
+            RequestClient(
+              client,
+              headers: {'content-type': 'application/json'},
+            ),
             builder,
             serializer,
           ),
