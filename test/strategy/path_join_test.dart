@@ -4,6 +4,22 @@ import 'package:handle/src/uri.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('joinUrls', () {
+    test('Merge queryParameters', () {
+      final mergedUri = joinUrls(
+        Uri(queryParameters: {
+          'hello': 'world',
+        }),
+        Uri(queryParameters: {
+          'foo': 'bar',
+        }),
+        (a, b) => PathJoinStrategy(a, b).resolve(),
+      );
+      expect(mergedUri.queryParameters['hello'], equals('world'));
+      expect(mergedUri.queryParameters['foo'], equals('bar'));
+    });
+  });
+
   group('PathJoinStrategy', () {
     test('default', () {
       expect(
