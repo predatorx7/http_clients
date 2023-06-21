@@ -2,11 +2,13 @@ import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import '../clients/wrapper.dart';
 
-typedef WrapperClientBuilder = http.Client Function(http.Client client);
+typedef WrapperClientBuilder<T extends http.Client> = T Function(
+  http.Client client,
+);
 
-class HttpServiceConfig {
+class HttpServiceConfig<T extends http.Client> {
   final http.Client client;
-  final WrapperClientBuilder? builder;
+  final WrapperClientBuilder<T>? builder;
 
   const HttpServiceConfig(
     this.client,
@@ -39,8 +41,8 @@ class HttpService<T extends http.Client> {
   /// The [builder] can be used to wrap [client] with wrapper http [http.Client]s.
   HttpService(
     http.Client client,
-    WrapperClientBuilder? builder,
-  ) : config = HttpServiceConfig(
+    WrapperClientBuilder<T>? builder,
+  ) : config = HttpServiceConfig<T>(
           client,
           builder,
         );
@@ -48,7 +50,7 @@ class HttpService<T extends http.Client> {
   HttpService.fromConfig(this.config);
 
   @protected
-  final HttpServiceConfig config;
+  final HttpServiceConfig<T> config;
 
   T? _innerClient;
 
@@ -65,16 +67,11 @@ class HttpService<T extends http.Client> {
   }
 
   @protected
-  T buildClient(HttpServiceConfig config) {
+  T buildClient(HttpServiceConfig<T> config) {
     final builder = config.builder;
     final client = config.client;
     if (builder != null) {
       final builtClient = builder(client);
-      if (builtClient is! T) {
-        throw HttpServiceException(
-          'The client built with `builder` should be of type `$T`',
-        );
-      }
       return builtClient;
     } else {
       final builtClient = client;

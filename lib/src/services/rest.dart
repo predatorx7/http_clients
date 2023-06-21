@@ -1,19 +1,37 @@
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import '../clients/request.dart';
 import '../clients/rest.dart';
 import '../serializer/json.dart';
 import 'http.dart';
 
-class RestServiceConfig extends HttpServiceConfig {
+class RestServiceConfig extends HttpServiceConfig<RestClient> {
   /// {@macro RestClient.serializer}
   final JsonModelSerializer? serializer;
 
-  const RestServiceConfig(
+  RestServiceConfig(
     http.Client client,
     WrapperClientBuilder? builder,
     this.serializer,
-  ) : super(client, builder);
+  ) : super(client, _builderWithProxy(builder, serializer));
+
+  static WrapperClientBuilder<RestClient> _builderWithProxy(
+    WrapperClientBuilder? proxyBuilder,
+    JsonModelSerializer? configSerializer,
+  ) {
+    return (parentClient) {
+      final builder = proxyBuilder;
+      final client = builder != null ? builder(parentClient) : parentClient;
+      final serializer = configSerializer;
+      if (client is RestClient) {
+        if (serializer != null) {
+          final updatedSerializer = serializer.merge(client.serializer);
+          client.serializer = updatedSerializer;
+        }
+        return client;
+      }
+      return RestClient(client, serializer: serializer);
+    };
+  }
 }
 
 /// A service that can be used to make requests to a JSON Api. It wraps the
@@ -43,22 +61,4 @@ class RestService extends HttpService<RestClient> {
   RestService.fromConfig(RestServiceConfig config) : super.fromConfig(config);
 
   RestServiceConfig get config => super.config as RestServiceConfig;
-
-  @override
-  @protected
-  RestClient buildClient(
-    covariant RestServiceConfig config,
-  ) {
-    final builder = config.builder;
-    final client = builder != null ? builder(config.client) : config.client;
-    final serializer = config.serializer;
-    if (client is RestClient) {
-      if (serializer != null) {
-        final updatedSerializer = serializer.merge(client.serializer);
-        client.serializer = updatedSerializer;
-      }
-      return client;
-    }
-    return RestClient(client, serializer: serializer);
-  }
 }
