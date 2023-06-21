@@ -14,6 +14,13 @@ class _B {
 }
 
 void main() {
+  test('JsonModelSerializerError', () {
+    expect(
+      JsonModelSerializerError('No deserializer found for type `$_A`')
+          .toString(),
+      equals('JsonModelSerializerError: No deserializer found for type `_A`'),
+    );
+  });
   group('JsonModelSerializer', () {
     test('addition', () {
       final serializer = JsonModelSerializer(
