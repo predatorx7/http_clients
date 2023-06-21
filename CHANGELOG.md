@@ -1,7 +1,8 @@
 ## 0.3.3
 
 - Update `benchmarks/`
-
+- Fix inherited properties override in `RequestClient`
+ 
 ## 0.3.2+1
 
 - Update documentation
