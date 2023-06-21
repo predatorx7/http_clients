@@ -6,6 +6,10 @@ import 'package:test/test.dart';
 
 import '../service/todo.dart';
 
+class _TestException {
+  const _TestException();
+}
+
 void main() {
   group('RestResponse', () {
     test('deserialization on unknown type parameters', () async {
@@ -34,7 +38,11 @@ void main() {
         response.deserializeBodyAsync<TodoModel>(),
         throwsA(isA<http.ClientException>()),
       );
-      response = RestResponse.fromResponse(
+    });
+    test('deserialization on registered deserializer', () async {
+      final model = TodoModel(1, 1, 'sample', true);
+      final modelJsonString = json.encode(model);
+      final response = RestResponse.fromResponse(
         http.Response(modelJsonString, 200),
         JsonModelSerializer(deserializers: {
           JsonDeserializerOf<TodoModel>(TodoModel.fromJson),
@@ -47,6 +55,28 @@ void main() {
       expectLater(
         response.deserializeBodyAsync<TodoModel>(),
         completion(isA<TodoModel>()),
+      );
+    });
+    test('deserialization errors', () async {
+      final model = TodoModel(1, 1, 'sample', true);
+      final modelJsonString = json.encode(model);
+      final response = RestResponse.fromResponse(
+        http.Response(modelJsonString, 200),
+        JsonModelSerializer(deserializers: {
+          JsonDeserializerOf<TodoModel>((json) {
+            throw _TestException();
+          }),
+        }),
+      );
+      expect(
+        () => response.deserializeBody<TodoModel>(),
+        throwsA(
+          isA<RestResponseException>(),
+        ),
+      );
+      expectLater(
+        response.deserializeBodyAsync<TodoModel>(),
+        throwsA(isA<RestResponseException>()),
       );
     });
   });

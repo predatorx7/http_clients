@@ -90,7 +90,7 @@ class RestResponse extends Response {
     }
     try {
       return serializer.deserialize<T>(body);
-    } on Exception catch (e, s) {
+    } catch (e, s) {
       throw RestResponseException(
         'Failed to deserialize body',
         uri: request?.url,

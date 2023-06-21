@@ -1,8 +1,9 @@
-## 0.3.3
+## 0.3.2+2
 
 - Update `benchmarks/`
 - Fix inherited properties override in `RequestClient`
- 
+- Fix catching of errors in `RestResponse.deserializeBody`
+
 ## 0.3.2+1
 
 - Update documentation
