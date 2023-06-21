@@ -3,7 +3,7 @@ import 'dart:isolate';
 import 'package:quiver/core.dart' as quiver;
 import '../utils/utils.dart';
 
-typedef FromJsonCallback<T> = T? Function(Object? json);
+typedef FromJsonCallback<T> = T? Function(dynamic json);
 
 class JsonModelSerializerError implements Exception {
   final String message;
@@ -128,6 +128,7 @@ class JsonModelSerializer {
   /// which includes serializers from both `this` and [other].
   JsonModelSerializer merge([JsonModelSerializer? other]) {
     final serializers = JsonModelSerializer();
+    serializers.apply(this);
     serializers.apply(common);
     if (other != null) {
       serializers.apply(other);

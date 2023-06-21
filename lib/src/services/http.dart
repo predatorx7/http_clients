@@ -40,9 +40,9 @@ class HttpService<T extends http.Client> {
   ///
   /// The [builder] can be used to wrap [client] with wrapper http [http.Client]s.
   HttpService(
-    http.Client client,
+    http.Client client, {
     WrapperClientBuilder<T>? builder,
-  ) : config = HttpServiceConfig<T>(
+  }) : config = HttpServiceConfig<T>(
           client,
           builder,
         );
