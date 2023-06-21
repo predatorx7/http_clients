@@ -27,7 +27,7 @@ extension ResponseFuture on Future<http.Response> {
   /// [RestResponse].
   ///
   /// {@macro RestResponse.deserializeBody<T>}
-  Future<T?> data<T>() {
+  Future<T?> data<T extends Object>() {
     return _thenRest((restResponse) {
       return restResponse.deserializeBody<T>();
     });
@@ -38,7 +38,7 @@ extension ResponseFuture on Future<http.Response> {
   /// [RestResponse].
   ///
   /// {@macro RestResponse.deserializeBodyAsync<T>}
-  Future<T?> dataAsync<T>() {
+  Future<T?> dataAsync<T extends Object>() {
     return _thenRest((restResponse) {
       return restResponse.deserializeBodyAsync<T>();
     });
@@ -83,7 +83,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   /// [RestResponse].
   ///
   /// {@macro RestResponse.deserializeBody<T>}
-  Future<T?> data<T>() {
+  Future<T?> data<T extends Object>() {
     return _thenRest((restResponse) {
       return restResponse.deserializeBody<T>();
     });
@@ -94,7 +94,7 @@ extension StreamedResponseFuture on Future<http.StreamedResponse> {
   /// [RestResponse].
   ///
   /// {@macro RestResponse.deserializeBodyAsync<T>}
-  Future<T?> dataAsync<T>() {
+  Future<T?> dataAsync<T extends Object>() {
     return _thenRest((restResponse) {
       return restResponse.deserializeBodyAsync<T>();
     });

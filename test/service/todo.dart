@@ -9,6 +9,15 @@ class TodoModel {
 
   const TodoModel(this.userId, this.id, this.title, this.completed);
 
+  Map<String, Object?> toJson() {
+    return {
+      'userId': userId,
+      'id': id,
+      'title': title,
+      'completed': completed,
+    };
+  }
+
   factory TodoModel.fromJson(dynamic json) {
     return TodoModel(
       json['userId'],

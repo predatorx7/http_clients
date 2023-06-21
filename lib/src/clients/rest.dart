@@ -84,7 +84,7 @@ class RestResponse extends Response {
   ///
   /// For large response body, try [RestResponse.deserializeBodyAsync].
   /// {@endtemplate}
-  T? deserializeBody<T>() {
+  T? deserializeBody<T extends Object>() {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
@@ -106,7 +106,7 @@ class RestResponse extends Response {
   ///
   /// For small response body, try [RestResponse.deserializeBody].
   /// {@endtemplate}
-  Future<T?> deserializeBodyAsync<T>() async {
+  Future<T?> deserializeBodyAsync<T extends Object>() async {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
     }
