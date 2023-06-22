@@ -1,6 +1,13 @@
 import 'package:http/http.dart' show BaseClient, Client, ClientException;
 import 'package:meta/meta.dart';
 
+/// An abstract class that exposes the inner [Client] to sub-classes
+/// from [inner].
+abstract class InnerClientWrapper {
+  @protected
+  Client get inner;
+}
+
 /// An abstract class that wraps a [Client].
 ///
 /// Implementors of [WrapperClient] class provides additional functionality to a
@@ -11,8 +18,9 @@ import 'package:meta/meta.dart';
 /// {@category Clients}
 /// {@category Configuration}
 /// {@category Error handling}
-abstract class WrapperClient extends BaseClient {
-  /// Creates a new [WrapperClient] with the given [client].
+abstract class WrapperClient extends BaseClient implements InnerClientWrapper {
+  /// Creates a new [WrapperClient] with the given [client]. The provided
+  /// [client] in the constructor is exposed as [inner] in this [WrapperClient].
   ///
   /// The [client] must be a non-null [Client].
   WrapperClient(Client client) : _inner = client;
@@ -27,6 +35,7 @@ abstract class WrapperClient extends BaseClient {
   /// This will throw [ClientException] if [close] is called with `force` as
   /// `true` on this client.
   @protected
+  @override
   Client get inner {
     final client = _inner;
     if (client == null) {

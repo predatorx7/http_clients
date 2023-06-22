@@ -37,24 +37,16 @@ class RestResponseException extends ClientException {
 class RestResponse extends Response {
   /// Create a new HTTP rest response with a byte array body.
   RestResponse.bytes(
-    List<int> bodyBytes,
-    int statusCode, {
-    BaseRequest? request,
-    Map<String, String> headers = const {},
-    bool isRedirect = false,
-    bool persistentConnection = true,
-    String? reasonPhrase,
+    super.bodyBytes,
+    super.statusCode, {
+    super.request,
+    super.headers = const {},
+    super.isRedirect = false,
+    super.persistentConnection = true,
+    super.reasonPhrase,
     JsonModelSerializer? serializer,
   })  : serializer = JsonModelSerializer.common.merge(serializer),
-        super.bytes(
-          bodyBytes,
-          statusCode,
-          request: request,
-          headers: headers,
-          isRedirect: isRedirect,
-          persistentConnection: persistentConnection,
-          reasonPhrase: reasonPhrase,
-        );
+        super.bytes();
 
   final JsonModelSerializer serializer;
 

@@ -1,49 +1,32 @@
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 import '../wrapper.dart';
 import 'request.dart';
 import 'response.dart';
 
+export 'exception.dart';
 export 'request.dart';
 export 'response.dart';
 
 /// {@category Clients}
-class InterceptorClient extends WrapperClient {
+class InterceptorClient extends WrapperClient
+    with RequestInterceptorMixin, ResponseInterceptorMixin {
+  @override
   final Iterable<RequestInterceptorCallback>? requestInterceptors;
+  @override
   final Iterable<ResponseInterceptorCallback>? responseInterceptors;
 
   InterceptorClient(
-    Client client, {
+    super.client, {
     this.requestInterceptors,
     this.responseInterceptors,
-  }) : super(client);
-
-  @protected
-  void onInterceptRequest(BaseRequest request) {
-    final interceptors = requestInterceptors;
-    if (interceptors == null || interceptors.isEmpty) return;
-
-    for (final interceptor in interceptors) {
-      interceptor(request);
-    }
-  }
-
-  @protected
-  void onInterceptResponse(StreamedResponse response) {
-    final interceptors = responseInterceptors;
-    if (interceptors == null || interceptors.isEmpty) return;
-
-    for (final interceptor in interceptors) {
-      interceptor(response);
-    }
-  }
+  });
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    onInterceptRequest(request);
+    await onInterceptRequest(request);
     final response = await inner.send(request);
-    onInterceptResponse(response);
+    await onInterceptResponse(response);
     return response;
   }
 }

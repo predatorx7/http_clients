@@ -4,32 +4,61 @@ import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
 import '../wrapper.dart';
+import 'exception.dart';
 
-typedef RequestInterceptorCallback = void Function(
+typedef RequestInterceptorCallback = FutureOr<void> Function(
   BaseRequest,
 );
 
-/// {@category Clients}
-class RequestInterceptorClient extends WrapperClient {
-  final Iterable<RequestInterceptorCallback> interceptors;
+class RequestInterceptorException extends InterceptorException {
+  const RequestInterceptorException(
+    super.message, {
+    super.uri,
+    super.innerException,
+    super.innerStackTrace,
+  });
+}
 
-  RequestInterceptorClient(
-    Client client,
-    this.interceptors,
-  ) : super(client);
+mixin RequestInterceptorMixin {
+  @protected
+  Iterable<RequestInterceptorCallback>? get requestInterceptors;
 
   @protected
-  void onInterceptRequest(BaseRequest request) {
-    if (interceptors.isEmpty) return;
+  Future<void> onInterceptRequest(BaseRequest request) async {
+    final requestInterceptors = this.requestInterceptors;
+    if (requestInterceptors == null || requestInterceptors.isEmpty) return;
 
-    for (final interceptor in interceptors) {
-      interceptor(request);
+    for (final interceptor in requestInterceptors) {
+      try {
+        await interceptor(request);
+      } catch (e, s) {
+        throw RequestInterceptorException(
+          'Request Interceptor failed due to an error',
+          uri: request.url,
+          innerException: e,
+          innerStackTrace: s,
+        );
+      }
     }
   }
+}
+
+/// {@category Clients}
+class RequestInterceptorClient extends WrapperClient
+    with RequestInterceptorMixin {
+  RequestInterceptorClient(
+    super.client,
+    this.interceptors,
+  );
+
+  final Iterable<RequestInterceptorCallback> interceptors;
+
+  @override
+  Iterable<RequestInterceptorCallback> get requestInterceptors => interceptors;
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    onInterceptRequest(request);
+    await onInterceptRequest(request);
     return inner.send(request);
   }
 }

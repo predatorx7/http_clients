@@ -3,32 +3,72 @@ import 'dart:async';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../../utils/unawaited_response.dart';
 import '../wrapper.dart';
+import 'exception.dart';
 
 typedef ResponseConverterCallback = FutureOr<StreamedResponse> Function(
   StreamedResponse,
 );
 
-/// {@category Clients}
-class ResponseConverterClient extends WrapperClient {
-  final Iterable<ResponseConverterCallback> converters;
+class ResponseConverterException extends ConverterException {
+  const ResponseConverterException(
+    super.message, {
+    super.uri,
+    super.innerException,
+    super.innerStackTrace,
+  });
+}
 
+mixin ResponseConverterMixin {
+  @protected
+  Iterable<ResponseConverterCallback>? get responseConverters;
+
+  @protected
+  FutureOr<StreamedResponse> onConvertResponse(
+    StreamedResponse response,
+  ) async {
+    final responseConverters = this.responseConverters;
+    if (responseConverters == null || responseConverters.isEmpty) {
+      return response;
+    }
+
+    StreamedResponse modifiedResponse = response;
+
+    for (final converter in responseConverters) {
+      try {
+        modifiedResponse = await converter(modifiedResponse);
+      } catch (e, s) {
+        unawaitedResponse(response);
+        throw ResponseConverterException(
+          'Response Converter failed due to an error',
+          uri: response.request?.url,
+          innerException: e,
+          innerStackTrace: s,
+        );
+      }
+    }
+
+    if (response != modifiedResponse) {
+      unawaitedResponse(response);
+    }
+
+    return modifiedResponse;
+  }
+}
+
+/// {@category Clients}
+class ResponseConverterClient extends WrapperClient
+    with ResponseConverterMixin {
   ResponseConverterClient(
     Client client,
     this.converters,
   ) : super(client);
 
-  @protected
-  FutureOr<StreamedResponse> onConvertResponse(StreamedResponse request) async {
-    if (converters.isEmpty) return request;
-    StreamedResponse modifiedResponse = request;
+  final Iterable<ResponseConverterCallback> converters;
 
-    for (final converter in converters) {
-      modifiedResponse = await converter(modifiedResponse);
-    }
-
-    return modifiedResponse;
-  }
+  @override
+  Iterable<ResponseConverterCallback> get responseConverters => converters;
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {

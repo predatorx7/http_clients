@@ -1,3 +1,8 @@
+## 0.3.3
+
+- Add `HandleClient` to retry request on error
+- Throw exceptions that are `ClientException`s when catching errors in convertors and interceptors
+
 ## 0.3.2+2
 
 - Update `benchmarks/`

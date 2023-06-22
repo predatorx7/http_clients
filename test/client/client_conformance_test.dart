@@ -12,6 +12,9 @@ void main() {
   group('RequestClient', () {
     testAll(() => RequestClient(http.Client()));
   });
+  group('HandleClient', () {
+    testAll(() => HandleClient(http.Client()));
+  });
   group('InterceptorClient', () {
     testAll(
       () => InterceptorClient(

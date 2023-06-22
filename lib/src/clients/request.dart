@@ -28,11 +28,11 @@ class RequestClient extends WrapperClient {
   /// Creates a [RequestClient] http client that can update the url
   /// and headers of a [BaseRequest] with [url], and [headers].
   RequestClient(
-    Client client, {
+    super.client, {
     this.url,
     this.headers,
     this.pathJoinStrategy = PathJoinStrategy.new,
-  }) : super(client);
+  });
 
   /// Returns an updated copy of [original] with the given [Request.body]
   /// where url and headers are overriden. If url and headers is same as
