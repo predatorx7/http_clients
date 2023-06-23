@@ -10,6 +10,8 @@
 
 A simple library for composing HTTP clients, and creating services to make HTTP requests. Uses the [package:http's Client](https://pub.dev/documentation/http/latest/http/Client-class.html).
 
+This can be used as an alternative to http client generator libraries like [retrofit](https://pub.dev/packages/retrofit), and [chopper](https://pub.dev/packages/chopper).
+
 ## Features
 
 Handle has number of features to make HTTP requests flexible, and easy to use:
