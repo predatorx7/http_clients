@@ -6,6 +6,8 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:http/http.dart' as http;
 
 typedef TestServer = ({HttpServer server, Uri uri});
+typedef ServerResponse = Response;
+typedef ServerRequest = Request;
 
 Future<TestServer> startTestHttpServer(
   void Function(Router router) onRouter,

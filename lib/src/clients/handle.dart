@@ -24,9 +24,28 @@ class HandleException implements ClientException {
   String toString() => 'HandleException: $message';
 }
 
+class HandleRetryLimitExceededException extends HandleException {
+  final int limit;
+
+  const HandleRetryLimitExceededException(
+    super.message,
+    this.limit, {
+    super.uri,
+    super.statusCode,
+    super.innerException,
+    super.innerStackTrace,
+  });
+
+  @override
+  String toString() {
+    return 'HandleRetryLimitExceededException: $message. Limit exceeded with $limit retires.';
+  }
+}
+
 typedef WhenRequestCallback = FutureOr<BaseRequest> Function(
   BaseRequest originalRequest,
   BaseRequest lastRequest,
+  FinalizedBodyStreamCallback bodyStream,
   BaseResponse? response,
   int retryCount,
 );
@@ -80,6 +99,7 @@ abstract class HandleInterface {
   FutureOr<BaseRequest> getUpdatedRequest(
     BaseRequest originalRequest,
     BaseRequest lastRequest,
+    FinalizedBodyStreamCallback bodyStream,
     BaseResponse? response,
     int retryCount,
   );
@@ -133,6 +153,7 @@ abstract mixin class Handle
   FutureOr<BaseRequest> getUpdatedRequest(
     BaseRequest originalRequest,
     BaseRequest lastRequest,
+    FinalizedBodyStreamCallback bodyStream,
     BaseResponse? response,
     int retryCount,
   ) {
@@ -153,17 +174,34 @@ abstract mixin class Handle
     BaseRequest latestRequest = request;
     StreamedResponse? response;
 
-    while (true) {
-      if (retryCount > HANDLE_RETRY_MAX_LIMIT) {
-        throw HandleException(
-          'Too many retries',
-          uri: request.url,
-          statusCode: response?.statusCode,
-        );
-      }
+    StreamController<List<int>>? sendBodyStreamController;
+    StreamController<List<int>>? retryBodyStreamController;
+    StreamSubscription<List<int>>? bodyStreamSubscription;
+
+    FutureOr<void> disposeLatest() {
+      bodyStreamSubscription?.cancel();
+      sendBodyStreamController?.close();
+      retryBodyStreamController?.close();
+      bodyStreamSubscription = null;
+      sendBodyStreamController = null;
+      retryBodyStreamController = null;
+    }
+
+    do {
       try {
+        disposeLatest();
+        final FinalizedBodyStream body = latestRequest.finalizedBodyStream;
+
+        sendBodyStreamController = StreamController<List<int>>();
+        retryBodyStreamController = StreamController<List<int>>();
+        bodyStreamSubscription = body.addStreamToSinks([
+          sendBodyStreamController!.sink,
+          retryBodyStreamController!.sink,
+        ]);
         try {
-          response = await inner.send(latestRequest);
+          response = await inner.send(
+            latestRequest.createCopy(sendBodyStreamController!.stream),
+          );
           if (!await retryRequestWhen(response, retryCount)) {
             return response;
           }
@@ -177,17 +215,31 @@ abstract mixin class Handle
           await Future.delayed(delay);
         }
 
+        bool didConsumeBodyInCopiedRequest = false;
+
+        FinalizedBodyStream getBodyStream() {
+          didConsumeBodyInCopiedRequest = true;
+          return retryBodyStreamController!.stream;
+        }
+
         latestRequest = await getUpdatedRequest(
           request,
           latestRequest,
+          getBodyStream,
           response,
           retryCount,
         );
 
+        if (didConsumeBodyInCopiedRequest) {
+          retryBodyStreamController!.close();
+        }
+
         await onRequestRetry(latestRequest, response, retryCount);
       } on ClientException {
+        disposeLatest();
         rethrow;
       } catch (e, s) {
+        disposeLatest();
         throw HandleException(
           'Unexpected exception while retrying a request',
           uri: request.url,
@@ -198,7 +250,15 @@ abstract mixin class Handle
       }
 
       retryCount++;
-    }
+    } while (retryCount < HANDLE_RETRY_MAX_LIMIT);
+
+    disposeLatest();
+    throw HandleRetryLimitExceededException(
+      'Too many retries',
+      retryCount,
+      uri: request.url,
+      statusCode: response?.statusCode,
+    );
   }
 }
 
@@ -276,6 +336,7 @@ class HandleClient extends WrapperClient with Handle {
   FutureOr<BaseRequest> getUpdatedRequest(
     BaseRequest originalRequest,
     BaseRequest lastRequest,
+    FinalizedBodyStreamCallback bodyStream,
     BaseResponse? response,
     int retryCount,
   ) {
@@ -284,6 +345,7 @@ class HandleClient extends WrapperClient with Handle {
       return updateRequest(
         originalRequest,
         lastRequest,
+        bodyStream,
         response,
         retryCount,
       );
@@ -291,6 +353,7 @@ class HandleClient extends WrapperClient with Handle {
     return super.getUpdatedRequest(
       originalRequest,
       lastRequest,
+      bodyStream,
       response,
       retryCount,
     );

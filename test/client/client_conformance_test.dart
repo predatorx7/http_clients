@@ -13,7 +13,7 @@ void main() {
     testAll(() => RequestClient(http.Client()));
   });
   group('HandleClient', () {
-    testAll(() => HandleClient(http.Client()));
+    testAll(() => HandleClient(http.Client()), canWorkInIsolates: false);
   });
   group('InterceptorClient', () {
     testAll(
