@@ -114,10 +114,12 @@ abstract class HandleInterface {
   );
 }
 
+/// {@macro HandleClient}
+///
 /// {@category Clients}
 abstract mixin class Handle
     implements Client, InnerClientWrapper, HandleInterface {
-  /// {@macro HandleClient}
+  /// {@macro Handle.client}
   factory Handle.client(
     Client client, {
     WhenCallback? when,
@@ -264,12 +266,14 @@ abstract mixin class Handle
   }
 }
 
+/// {@template HandleClient}
 /// A client that allows retrying HTTP request with different request
 /// on response or errors
+/// {@endtemplate}
 ///
 /// {@category Clients}
 class HandleClient extends WrapperClient with Handle {
-  /// {@template HandleClient}
+  /// {@template Handle.client}
   /// Creates a client that allows retrying HTTP request with different request
   /// on response or errors
   /// {@endtemplate}

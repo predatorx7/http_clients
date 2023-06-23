@@ -8,6 +8,7 @@
 - **RequestInterceptorClient**, and **ResponseInterceptorClient** to individually intercept requests or responses.
 - **ConverterClient**: A client that allows you to convert requests and responses before they are sent or received.
 - **RequestConverterClient**, or **ResponseConverterClient** to individually modify requests or responses.
+- **HandleClient**: A client that allows retrying HTTP request with different request on response or errors.
 
 ## Use
 
@@ -55,3 +56,41 @@ final response = await service.get(Uri(path: '/todos'));
 // Deserialize body as json to a model class.
 final List<TodoModel>? data = await response.data<List<TodoModel>>();
 ```
+
+### HandleClient or Handle.client
+
+A client that allows retrying HTTP request with different request on response or errors. 
+
+Following below is an example where we retry a request after updating authorization token if response returns 401 status code.
+
+```dart
+// handle cases where response returns status 401 when request has invalid authorization token
+final client = Handle.client(
+  someClient,
+  when: (response, count) async {
+    return response.statusCode == 401 && await acquireToken();
+  },
+  updateRequest: (
+    originalRequest,
+    lastRequest,
+    bodyStream,
+    response,
+    retryCount,
+  ) {
+    return lastRequest.createCopy(bodyStream())
+      ..headers['authorization'] = token;
+  },
+);
+
+// send a request that needs authorization
+client
+.get(Uri.http('example.com', '/hello'), headers: {
+  'authorization': token,
+});
+```
+
+For a complete sample, see the [Handle client sample][] in the example directory.
+For more on how to configure clients in `handle`, see [Configuration].
+
+[Handle client sample]: https://github.com/predatorx7/handle/tree/main/example/api/clients/handle.dart
+[Configuration]: https://pub.dev/documentation/handle/latest/topics/Configuration-topic.html
