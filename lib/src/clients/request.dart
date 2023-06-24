@@ -6,6 +6,18 @@ import '../strategy/path_join.dart';
 import '../uri.dart';
 import 'wrapper.dart';
 
+typedef NeedsHeaderUpdate = bool Function(
+  Map<String, String> requestHeaders,
+  MapEntry<String, String> header,
+);
+
+bool updateHeaderIfAbsent(
+  Map<String, String> requestHeaders,
+  MapEntry<String, String> header,
+) {
+  return !requestHeaders.containsKey(header.key);
+}
+
 /// A client that overrides [url], [headers] of the request.
 ///
 /// Use [pathJoinStrategy] to decide path joining strategy.
@@ -25,6 +37,8 @@ class RequestClient extends WrapperClient {
   /// Defaults to [DefaultPathJoinStrategy].
   final PathJoinStrategyCallback pathJoinStrategy;
 
+  final NeedsHeaderUpdate updateHeaderIf;
+
   /// Creates a [RequestClient] http client that can update the url
   /// and headers of a [BaseRequest] with [url], and [headers].
   RequestClient(
@@ -32,6 +46,7 @@ class RequestClient extends WrapperClient {
     this.url,
     this.headers,
     this.pathJoinStrategy = PathJoinStrategy.new,
+    this.updateHeaderIf = updateHeaderIfAbsent,
   });
 
   /// Returns an updated copy of [original] with the given [Request.body]
@@ -93,11 +108,11 @@ class RequestClient extends WrapperClient {
     }
 
     if (headers != null) {
-      final absentHeaders = headers?.entries.where(
-        (e) => !request.headers.containsKey(e.key),
+      final newHeaders = headers?.entries.where(
+        (e) => updateHeaderIf(request.headers, e),
       );
-      if (absentHeaders != null && absentHeaders.isNotEmpty) {
-        request.headers.addEntries(absentHeaders);
+      if (newHeaders != null && newHeaders.isNotEmpty) {
+        request.headers.addEntries(newHeaders);
       }
     }
 

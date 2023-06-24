@@ -1,6 +1,6 @@
 name: handle
 description: A simple library for composing HTTP clients, creating services to make HTTP requests.
-version: 0.3.3
+version: 0.3.4
 repository: https://github.com/predatorx7/handle
 
 environment:

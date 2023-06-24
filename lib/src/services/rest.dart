@@ -47,11 +47,18 @@ class RestService extends HttpService<RestClient> {
     http.Client client, {
     JsonModelSerializer? serializer,
     WrapperClientBuilder? builder,
+    bool includeJsonContentTypeHeader = true,
   }) : super.fromConfig(
           RestServiceConfig(
             RequestClient(
               client,
-              headers: {'content-type': 'application/json'},
+              headers: includeJsonContentTypeHeader
+                  ? {'content-type': 'application/json; charset=utf-8'}
+                  : null,
+              updateHeaderIf: (requestHeaders, header) {
+                if (header.key == 'content-type') return true;
+                return updateHeaderIfAbsent(requestHeaders, header);
+              },
             ),
             builder,
             serializer,

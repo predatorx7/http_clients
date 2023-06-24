@@ -142,5 +142,35 @@ void main() {
         equals(Uri.https('other-example.com', '/hello')),
       );
     });
+
+    test(
+        "updateHeaderIf can prevent 'content-type': 'application/json' from being overriden in POST request",
+        () async {
+      http.BaseRequest? receivedRequest;
+      late RequestClient client = RequestClient(
+        RequestTestClient((request) {
+          receivedRequest = request;
+        }),
+        url: Uri.https('example.com'),
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'some-header': 'some-value',
+        },
+        updateHeaderIf: (requestHeaders, header) {
+          if (header.key == 'content-type') return true;
+          return updateHeaderIfAbsent(requestHeaders, header);
+        },
+      );
+
+      await client.post(Uri(path: '/hello'), body: '{"ok": true}');
+
+      expect(receivedRequest, isNotNull);
+      expect(
+        receivedRequest?.headers['content-type'],
+        contains('application/json; charset=utf-8'),
+      );
+      expect(receivedRequest?.headers['some-header'], equals('some-value'));
+      expect(receivedRequest?.url, equals(Uri.https('example.com', '/hello')));
+    });
   });
 }

@@ -1,3 +1,8 @@
+## 0.3.4
+
+- Fix `content-type` from being overriden in rest service.
+- Add `updateHeaderIf` to customize inclusion of headers in RequestClient.
+
 ## 0.3.3
 
 - Add `HandleClient` to retry request on error
