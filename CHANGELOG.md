@@ -1,3 +1,7 @@
+## 0.3.4+1
+
+- Fix use of isolates on web
+
 ## 0.3.4
 
 - Fix `content-type` from being overriden in rest service.

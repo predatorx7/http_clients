@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 
+import 'package:handle/src/utils/compute.dart';
 import 'package:http/http.dart';
 
 import '../serializer/json.dart';
@@ -66,8 +66,8 @@ class RestResponse extends Response {
   ///
   /// For small response body, try [jsonBody].
   /// {@endtemplate}
-  Future<Object?> get jsonBodyAsync {
-    return Isolate.run(() => tryDecodeJson(body));
+  FutureOr<Object?> get jsonBodyAsync {
+    return compute(() => tryDecodeJson(body));
   }
 
   /// {@template RestResponse.deserializeBody<T>}

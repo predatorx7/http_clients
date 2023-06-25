@@ -1,5 +1,6 @@
-import 'dart:isolate';
+import 'dart:async';
 
+import 'package:handle/src/utils/compute.dart';
 import 'package:quiver/core.dart' as quiver;
 import '../utils/utils.dart';
 
@@ -115,8 +116,8 @@ class JsonModelSerializer {
     return deserializer(jsonBody);
   }
 
-  Future<T?> deserializeAsync<T>(String body) {
-    return Isolate.run(() {
+  FutureOr<T?> deserializeAsync<T>(String body) {
+    return compute(() {
       return deserialize<T>(body);
     }, debugName: 'deserializeAsync<$T>');
   }
