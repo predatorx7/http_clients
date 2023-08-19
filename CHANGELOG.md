@@ -1,3 +1,7 @@
+## 0.3.5
+
+- Fix async deserialization of request body with Handle client in isolates
+
 ## 0.3.4+1
 
 - Fix use of isolates on web
