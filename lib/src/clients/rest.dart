@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:handle/src/utils/compute.dart';
 import 'package:http/http.dart';
 
+import '../features.dart';
 import '../serializer/json.dart';
+import '../serializer/used_handle.dart';
 import '../utils/utils.dart';
 import 'wrapper.dart';
 
@@ -67,6 +69,10 @@ class RestResponse extends Response {
   /// For small response body, try [jsonBody].
   /// {@endtemplate}
   FutureOr<Object?> get jsonBodyAsync {
+    if ($HandleFeatures.disableAsyncDeserializationWithHandle &&
+        didUseHandle(this)) {
+      return jsonBody;
+    }
     return compute(() => tryDecodeJson(body));
   }
 
@@ -101,6 +107,10 @@ class RestResponse extends Response {
   Future<T?> deserializeBodyAsync<T extends Object>() async {
     if (!serializer.contains<T>()) {
       throw ClientException('No serializers found for type `$T`.');
+    }
+    if ($HandleFeatures.disableAsyncDeserializationWithHandle &&
+        didUseHandle(this)) {
+      return deserializeBody();
     }
     try {
       return await serializer.deserializeAsync<T>(body);

@@ -5,6 +5,9 @@ import 'package:handle/src/utils/unawaited_response.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../features.dart';
+import '../serializer/used_handle.dart';
+
 class HandleException implements ClientException {
   final String message;
   final Uri? uri;
@@ -116,6 +119,9 @@ abstract class HandleInterface {
 
 /// {@macro HandleClient}
 ///
+/// Note: This adds a header 'used-handle' by default in request which is used by [JsonModelSerializer] to
+/// disable asynchronous deserialization which would otherwise fail with an error if handle is used to update request.
+///
 /// {@category Clients}
 abstract mixin class Handle
     implements Client, InnerClientWrapper, HandleInterface {
@@ -173,7 +179,10 @@ abstract mixin class Handle
   ) {}
 
   @override
-  Future<StreamedResponse> send(BaseRequest request) async {
+  Future<StreamedResponse> send(BaseRequest originalRequest) async {
+    final request = $HandleFeatures.disableAsyncDeserializationWithHandle
+        ? markHandleUsageInRequestHeaders(originalRequest)
+        : originalRequest;
     int retryCount = 0;
     BaseRequest latestRequest = request;
     StreamedResponse? response;

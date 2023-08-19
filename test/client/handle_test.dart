@@ -1,7 +1,11 @@
+import 'dart:isolate';
+
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart' as http_testing;
 import 'package:handle/handle.dart';
 import 'package:test/test.dart';
+
+import '../test_server.dart';
 
 void main() {
   group('HandleClient', () {
@@ -95,6 +99,31 @@ void main() {
         client.send(http.Request('GET', Uri())),
         throwsA(isA<HandleRetryLimitExceededException>()),
       );
+    });
+
+    group('async deserialization', () {
+      late TestServer server;
+
+      setUp(() async {
+        server = await startTestHttpServer((router) {
+          router.get('/', (ServerRequest request) {
+            return ServerResponse.ok('true');
+          });
+        });
+      });
+
+      tearDown(() {
+        server.server.close();
+      });
+
+      test('by RestResponse should run synchronously', () {
+        expectLater(
+          Isolate.run(() => Handle.client(http.Client())
+              .get(Uri.parse('http://localhost:8080/'))
+              .jsonBodyAsync),
+          completion(equals(true)),
+        );
+      });
     });
   });
 }
