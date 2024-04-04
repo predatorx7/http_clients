@@ -65,7 +65,8 @@ class RestService extends HttpService<RestClient> {
           ),
         );
 
-  RestService.fromConfig(RestServiceConfig config) : super.fromConfig(config);
+  RestService.fromConfig(RestServiceConfig super.config) : super.fromConfig();
 
+  @override
   RestServiceConfig get config => super.config as RestServiceConfig;
 }

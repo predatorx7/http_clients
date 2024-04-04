@@ -20,7 +20,7 @@ Future<TestServer> startTestHttpServer(
 
   onRouter(app);
 
-  final server = await io.serve(app, 'localhost', 8080);
+  final server = await io.serve(app.call, 'localhost', 8080);
 
   final serverUri = Uri.http('${server.address.host}:${server.port}');
 

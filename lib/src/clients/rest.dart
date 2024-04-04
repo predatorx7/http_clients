@@ -184,9 +184,9 @@ class RestClient extends WrapperClient {
   JsonModelSerializer? serializer;
 
   RestClient(
-    Client inner, {
+    super.inner, {
     this.serializer,
-  }) : super(inner);
+  });
 
   @override
   Future<RestResponse> head(Uri url, {Map<String, String>? headers}) =>

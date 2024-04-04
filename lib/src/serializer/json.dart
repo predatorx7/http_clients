@@ -46,7 +46,7 @@ class JsonDeserializerOf<T extends Object> {
   }
 
   @override
-  bool operator ==(Object? other) {
+  bool operator ==(Object other) {
     return other is JsonDeserializerOf<T> &&
         other.deserializeFromJson == deserializeFromJson;
   }

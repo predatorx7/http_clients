@@ -2,4 +2,4 @@ include: package:lints/recommended.yaml
 
 linter:
   rules:
-    overridden_fields: ignore
+    constant_identifier_names: ignore

@@ -1,3 +1,9 @@
+## 0.3.6
+
+- Update copyright year in License
+- Migrate to super-constructor parameters
+- Fix lint errors and update dependencies
+
 ## 0.3.5
 
 - Fix async deserialization of request body with Handle client in isolates

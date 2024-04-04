@@ -15,9 +15,8 @@ void addAllDeserializers() {
 }
 
 class TodoService extends RestService {
-  TodoService(http.Client client)
+  TodoService(super.client)
       : super(
-          client,
           builder: (client) {
             return RequestClient(
               client,

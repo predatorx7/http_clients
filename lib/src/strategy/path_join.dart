@@ -86,8 +86,7 @@ abstract class _PathJoinStrategy implements PathJoinStrategy {
 /// is placed first.
 /// {@endtemplate}
 class DefaultPathJoinStrategy extends _PathJoinStrategy {
-  const DefaultPathJoinStrategy(Uri otherUri, Uri currentUri)
-      : super(otherUri, currentUri);
+  const DefaultPathJoinStrategy(super.otherUri, super.currentUri);
 
   @override
   Iterable<String> resolve() {
@@ -108,8 +107,7 @@ class DefaultPathJoinStrategy extends _PathJoinStrategy {
 /// A path join strategy that only returns the currentUri passed to it.
 /// {@endtemplate}
 class CurrentOnlyPathJoinStrategy extends _PathJoinStrategy {
-  const CurrentOnlyPathJoinStrategy(Uri otherUri, Uri currentUri)
-      : super(otherUri, currentUri);
+  const CurrentOnlyPathJoinStrategy(super.otherUri, super.currentUri);
 
   @override
   Iterable<String> resolve() {
@@ -121,8 +119,7 @@ class CurrentOnlyPathJoinStrategy extends _PathJoinStrategy {
 /// A path join strategy that only returns the otherUri passed to it.
 /// {@endtemplate}
 class OtherOnlyPathJoinStrategy extends _PathJoinStrategy {
-  const OtherOnlyPathJoinStrategy(Uri otherUri, Uri currentUri)
-      : super(otherUri, currentUri);
+  const OtherOnlyPathJoinStrategy(super.otherUri, super.currentUri);
 
   @override
   Iterable<String> resolve() {
@@ -135,8 +132,7 @@ class OtherOnlyPathJoinStrategy extends _PathJoinStrategy {
 /// [otherUri] is ordered before [currentUri] passed to it.
 /// {@endtemplate}
 class OtherFirstPathJoinStrategy extends _PathJoinStrategy {
-  const OtherFirstPathJoinStrategy(Uri otherUri, Uri currentUri)
-      : super(otherUri, currentUri);
+  const OtherFirstPathJoinStrategy(super.otherUri, super.currentUri);
 
   @override
   Iterable<String> resolve() {
@@ -152,8 +148,7 @@ class OtherFirstPathJoinStrategy extends _PathJoinStrategy {
 /// [currentUri] is ordered before [otherUri] passed to it.
 /// {@endtemplate}
 class CurrentFirstPathJoinStrategy extends _PathJoinStrategy {
-  const CurrentFirstPathJoinStrategy(Uri otherUri, Uri currentUri)
-      : super(otherUri, currentUri);
+  const CurrentFirstPathJoinStrategy(super.otherUri, super.currentUri);
 
   @override
   Iterable<String> resolve() {

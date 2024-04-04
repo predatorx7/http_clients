@@ -10,6 +10,7 @@ class DisposeTestClient extends http.BaseClient {
 
   bool isClosed = false;
 
+  @override
   void close() {
     isClosed = true;
   }
@@ -25,6 +26,7 @@ class TestWrapperClient extends WrapperClient {
 
   bool isClosed = false;
 
+  @override
   void close({
     bool force = true,
     http.Client? keepAliveHttpClient,

@@ -9,7 +9,9 @@ import '../features.dart';
 import '../serializer/used_handle.dart';
 
 class HandleException implements ClientException {
+  @override
   final String message;
+  @override
   final Uri? uri;
   final int? statusCode;
   final Object? innerException;
