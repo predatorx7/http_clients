@@ -24,10 +24,10 @@ class JsonDeserializerOf<T extends Object> {
 
   Type get objectType => T;
 
-  T? call(Object? json) => deserializeFromJson(json);
+  T? call(dynamic json) => deserializeFromJson(json);
 
   JsonDeserializerOf<List<T>> getJsonListSerializer() {
-    List<T>? fromJsonList(Object? object) {
+    List<T>? fromJsonList(dynamic object) {
       if (object is! Iterable) return null;
       if (object.isEmpty) return <T>[];
       return object.map(deserializeFromJson).whereType<T>().toList();

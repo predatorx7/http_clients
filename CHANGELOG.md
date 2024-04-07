@@ -1,5 +1,6 @@
 ## 0.3.6
 
+- Change JsonDeserializerOf.call's parameter to dynamic
 - Update copyright year in License
 - Migrate to super-constructor parameters
 - Fix lint errors and update dependencies
