@@ -5,7 +5,7 @@
 - **RestClient**: A client for REST requests that de/serializes models on request and response.
 - **RequestClient**: A client that lets you modify request url and headers.
 - **InterceptorClient**: A client that allows you to add interceptors to requests and responses.
-- **RequestInterceptorClient**, and **ResponseInterceptorClient** to individually intercept requests or responses.
+- **RequestInterceptorClient**, and **ResponseInterceptorClient** to individually intercept requests, responses, or exceptions. This is not like **ConverterClient**, and intercepted information is view only.
 - **ConverterClient**: A client that allows you to convert requests and responses before they are sent or received.
 - **RequestConverterClient**, or **ResponseConverterClient** to individually modify requests or responses.
 - **HandleClient**: A client that allows retrying HTTP request with different request on response or errors.

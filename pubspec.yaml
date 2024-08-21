@@ -1,6 +1,6 @@
 name: handle
 description: A simple library for composing HTTP clients, creating services to make HTTP requests.
-version: 0.3.6
+version: 0.4.0
 repository: https://github.com/predatorx7/handle
 
 environment:
@@ -29,6 +29,6 @@ dev_dependencies:
     git: 
       url: https://github.com/dart-lang/http.git
       path: pkgs/http_client_conformance_tests/
-      ref: ccefa7c
+      ref: http-v1.2.2
   shelf: ^1.4.1
   shelf_router: ^1.1.4

@@ -1,3 +1,7 @@
+## 0.4.0
+
+- Add [InterceptorClient.clientExceptionInterceptors] and [ClientExceptionInterceptorClient] to intercept exceptions that happen when sending a request
+
 ## 0.3.6
 
 - Change JsonDeserializerOf.call's parameter to dynamic
